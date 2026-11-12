@@ -145,6 +145,9 @@ const TEAMS={ARI:"Cardinals",ATL:"Falcons",BAL:"Ravens",BUF:"Bills",CAR:"Panther
 const TNAME=(a,y)=>a==="WSH"&&+y<=2022?(+y===2021?"Football Team":"Commanders"):TEAMS[a]||a;
 /* Bidder colors shared with the golf site (name, chip color, chip text), most senior first. */
 const MASTER=[["STONE. B","#BDFD50","#000"],["MILLER. J","#D7BFFA","#000"],["WYNDHAM. R","#DD45DF","#fff"],["BOYD. D","#926531","#fff"],["BOYD IV. B","#CCD9F5","#000"],["HOUSE. C","#BDFDC8","#000"],["WOODWARD. R","#D7BFFA","#000"],["STONE. J","#FEFACD","#000"],["BOHNERT. J","#60B158","#fff"],["FLATH. B","#F19E38","#000"],["WILLIAMS. K","#60B158","#fff"],["CLAYTON. D","#000070","#fff"],["BRADBURY. C","#B2A7D2","#000"],["FLATH. H","#4A62D1","#fff"],["FRENCH. C","#D3354F","#fff"],["FOUGEROUSSE. D","#70D1F0","#000"],["KAISER. K","#FAE250","#000"],["BOYD II. B","#8529AE","#fff"],["OLSON. T","#F1C0D3","#000"],["BRADBURY. D","#EC5E2B","#000"],["BOYD III. B","#75140C","#fff"],["FIDLER. J","#BDFD50","#000"],["WOODWARD. N","#75140C","#fff"],["BOYD. B","#5C9790","#fff"],["MYERS. J","#EC5E2B","#000"],["POWELL. H","#F1C0D3","#000"],["THOMPSON. J","#BDFD50","#000"],["JERRELLS. L","#5D0E07","#fff"],["FLATER. B","#75FB4C","#000"],["FISH. JD","#926531","#fff"]];
+/* NFL-only colors (override the golf list here) */
+const NFLC={"MILLER. J":["#D3354F","#fff"],"STONE. J":["#60B158","#fff"]};
+MASTER.forEach(m=>{if(NFLC[m[0]]){m[1]=NFLC[m[0]][0];m[2]=NFLC[m[0]][1]}});
 const SPARE=["#1B3459","#8C2A65","#3A591B","#12B886","#F29085","#8C8C07","#499DF2","#E0177F","#2B2BD9","#AD0CF2"];
 const RND=["Wild Card","Divisional","Conference","Super Bowl"],RS=["WC","DIV","CONF","SB"],WK={1:0,2:1,3:2,4:3,5:3};
 const $=id=>document.getElementById(id);
