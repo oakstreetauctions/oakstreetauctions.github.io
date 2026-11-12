@@ -4,6 +4,12 @@
 <meta name="theme-color" content="#013369">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="icon" href="/apple-touch-icon.png">
 <title>Oak Street Auctions · NFL Playoffs</title>
+<meta name="description" content="NFL Playoffs Calcutta: bracket, payouts, standings and every Super Bowl since 2021.">
+<meta property="og:title" content="Oak Street Auctions · NFL Playoffs">
+<meta property="og:description" content="NFL Playoffs Calcutta: bracket, payouts, standings and every Super Bowl since 2021.">
+<meta property="og:url" content="https://oakstreetauctions.github.io/nfl/">
+<meta property="og:image" content="https://oakstreetauctions.github.io/apple-touch-icon.png">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -152,6 +158,10 @@ table.atg td:last-child,table.atg th:last-child{padding-right:12px}
 
 /* share results button */
 .shr{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:0 0 4px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);font:600 14px var(--ui);cursor:pointer}.shr svg{color:var(--red)}
+
+/* one look for every letter: no "ff"/"fi" ligatures (some display fonts draw them in a different style) */
+body{font-variant-ligatures:no-common-ligatures}
+.sgt .tg{flex:0 0 auto}
 </style></head>
 <body>
 <header><a class="osh" href="/" aria-label="Oak Street Auctions home" title="Oak Street Auctions home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a><button class="burger" id="burger" aria-label="Open menu" onclick="dr(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><h1 onclick="go('home')">Oak Street <span>Auctions</span></h1><div class="rule"></div><div class="evpick" id="evpick"></div></header>
