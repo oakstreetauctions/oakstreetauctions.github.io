@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#013369">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="icon" href="/apple-touch-icon.png">
+<title>Oak Street Auctions · NFL Playoffs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f3f6;--fg:#0a0a0a;--card:#fff;--line:#dfe2e8;--mut:#6a7280;--seg:#e3e5ea;--sel:#fff;--navy:#013369;--red:#d50a0a;--acc:#013369;--pos:#1f9d4a;--neg:#e5484d;
+  --body:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;--ui:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Segoe UI",sans-serif}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#090b0e;--fg:#f2f4f7;--card:#14181d;--line:#262c35;--mut:#8f98a6;--seg:#1a1f26;--sel:#353c47;--acc:#6f9bff}}
+:root[data-theme="dark"]{--bg:#090b0e;--fg:#f2f4f7;--card:#14181d;--line:#262c35;--mut:#8f98a6;--seg:#1a1f26;--sel:#353c47;--acc:#6f9bff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--ui)}
+/* ===== shared Oak Street shell: header, hamburger menu, year picker, nav ===== */
+header{position:relative;overflow:hidden;background:var(--navy);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 18px) 48px 14px;text-align:center;border-bottom:1px solid #0d2a52}
+header:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--red)}
+header:after{content:"";position:absolute;right:0;top:0;bottom:0;width:70px;background:repeating-linear-gradient(115deg,transparent 0 9px,var(--red) 9px 11px,transparent 11px 17px,#fff 17px 18px,transparent 18px 26px);opacity:.5;pointer-events:none}
+header h1{position:relative;z-index:1;margin:0;font:italic 800 30px/1 var(--body);letter-spacing:.01em;text-transform:uppercase;cursor:pointer}
+header h1 span{display:block;color:#ff4b4b}@media(min-width:600px){header h1 span{display:inline}}
+header .rule{position:relative;z-index:1;width:44px;height:1px;background:#ff4b4b;margin:10px auto 0}
+.burger{position:absolute;z-index:2;left:10px;top:calc(env(safe-area-inset-top,0px) + 14px);width:40px;height:40px;border:0;background:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px}
+.burger:hover{background:rgba(255,255,255,.1)}.burger svg{width:22px;height:22px}
+.evpick{position:relative;z-index:1;display:inline-flex;align-items:center;gap:7px;margin-top:9px;padding:4px 12px;border:1px solid rgba(255,255,255,.3);border-radius:999px;font:600 11px var(--ui);letter-spacing:.14em;text-transform:uppercase}
+.evpick .car3{font-size:9px;opacity:.85}.evpick.plain{border:0;padding:0;margin-top:8px;opacity:.9}
+.evpick select{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;font-size:16px}
+nav{position:sticky;top:0;z-index:5;background:var(--navy);display:flex;padding:0 8px;justify-content:center;border-bottom:1px solid #0d2a52;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+nav button{flex:1 1 0;max-width:160px;appearance:none;border:0;background:none;color:rgba(255,255,255,.66);font:600 11.5px var(--ui);letter-spacing:.11em;text-transform:uppercase;padding:13px 2px 11px;border-bottom:2px solid transparent;cursor:pointer}
+nav button:hover{color:#fff}nav button.on{color:#fff;border-bottom-color:#ff4b4b}
+.drawer{position:fixed;inset:0;z-index:60;display:none}.drawer.on{display:block}
+.drawer-bg{position:absolute;inset:0;background:rgba(5,12,25,.5);animation:fade .15s}
+.drawer-card{position:absolute;left:0;top:0;bottom:0;width:min(330px,88vw);background:var(--bg);overflow:auto;box-shadow:6px 0 30px rgba(0,0,0,.25);animation:slide .2s ease-out;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+@keyframes slide{from{transform:translateX(-100%)}to{transform:none}}@keyframes fade{from{opacity:0}to{opacity:1}}
+.dr-head{background:var(--navy);color:#fff;border-left:5px solid var(--red);padding:calc(env(safe-area-inset-top,0px) + 18px) 16px 16px;display:flex;align-items:center;justify-content:space-between}
+.dr-head b{font:italic 800 22px/1 var(--body);text-transform:uppercase}.dr-head b span{color:#ff4b4b}
+.dr-head button{border:0;background:none;color:inherit;font-size:18px;cursor:pointer;width:36px;height:36px}
+.dr-link{text-decoration:none;display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;color:var(--fg);text-align:left;padding:11px 16px;font:600 14px var(--ui);cursor:pointer;border-left:3px solid transparent}
+.dr-link:hover{background:var(--seg)}.dr-link.on{border-left-color:var(--red);background:var(--seg)}
+.dr-link .ic{width:20px;display:flex;justify-content:center;color:var(--red)}
+.dr-div{display:flex;align-items:center;gap:10px;padding:12px 16px 2px;font:600 9.5px var(--ui);letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.dr-div::after{content:"";flex:1;height:1px;background:var(--line)}
+.dr-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:10px 16px 8px}
+.dr-cell{height:34px;border:1px solid var(--line);border-left:3px solid var(--red);border-radius:4px;background:var(--card);color:var(--fg);font:600 12.5px var(--ui);cursor:pointer;padding:0}
+.dr-cell:hover{background:var(--seg)}.dr-cell.on{background:var(--red);border-color:var(--red);color:#fff}
+/* ===== page ===== */
+.wrap{max-width:1100px;margin:0 auto;padding:12px 10px calc(30px + env(safe-area-inset-bottom,0px))}
+.sub{font:12px var(--ui);color:var(--mut);margin:0 0 8px}
+.tabs{display:flex;gap:2px;background:var(--seg);padding:2px;border-radius:10px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;padding:7px 11px;border:0;border-radius:8px;background:transparent;color:var(--mut);font:600 13px var(--ui);white-space:nowrap;cursor:pointer}
+.tab.on{background:var(--sel);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tabs.sm{margin:0;display:inline-flex;overflow:visible}.tabs.sm .tab{flex:0 0 auto;padding:5px 11px;font-size:12px}
+.bracket{display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;-webkit-overflow-scrolling:touch}
+.col{flex:0 0 176px;display:flex;flex-direction:column}
+.col h4{margin:0 0 5px;padding-bottom:4px;border-bottom:1px solid var(--line);font:600 11px var(--ui);text-transform:uppercase;letter-spacing:.08em;color:var(--mut);text-align:center}
+.games{flex:1;display:flex;flex-direction:column;justify-content:space-around}
+.g{display:flex;flex-direction:column;justify-content:center;gap:3px;padding:3px;margin:3px 0;border:1px solid var(--line);border-radius:10px;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.gl{font:600 10px var(--ui);letter-spacing:.08em;text-transform:uppercase;color:var(--mut);padding:1px 4px 0}
+.slot{display:flex;align-items:center;gap:6px;height:38px;padding:0 8px 0 0;border-radius:7px;font:700 15px var(--body);white-space:nowrap;background:#fff;color:#111;overflow:hidden;border:1px solid #cfd4dc}
+.slot b{align-self:stretch;display:grid;place-items:center;width:50px;flex:none;font:800 16px/1 var(--body);letter-spacing:.03em}
+.slot i{font-style:normal;font-size:12px;opacity:.7;width:12px;text-align:right}
+.slot span{flex:1;overflow:hidden;text-overflow:ellipsis}
+.slot em{font:700 16px var(--body);font-style:normal;font-variant-numeric:tabular-nums}
+.slot.out{opacity:.35;text-decoration:line-through}.slot.fade{opacity:.15}
+.slot.tbd{background:transparent;border:1px dashed var(--line);color:var(--mut);justify-content:center;padding:0;font-weight:500;letter-spacing:.1em}
+.slot.bye{background:transparent;border:1px dashed var(--line);color:var(--mut);justify-content:center;padding:0;font:600 11px var(--ui);letter-spacing:.12em}
+.dt,.tg{border-radius:6px;padding:2px 7px;font:700 13px var(--body);white-space:nowrap}
+.tg{flex:none;min-width:40px;height:28px;padding:0 6px;display:grid;place-items:center;font:800 15px var(--body);letter-spacing:.03em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.ch{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);font:700 17px var(--body);letter-spacing:.02em;text-transform:uppercase}
+.ch span:last-child{font:500 11px var(--ui);color:var(--mut);text-transform:none;letter-spacing:0}
+.r{display:flex;align-items:center;gap:9px;padding:8px 12px;border-bottom:1px solid var(--line)}
+.r:last-child{border-bottom:0}.r.tap{cursor:pointer}.r.tap:hover{background:var(--seg)}
+.rk{width:18px;font:700 15px var(--body);text-align:center;color:var(--mut)}
+.rm{flex:1;min-width:0;display:flex;flex-direction:column}
+.rm b{font:700 16px var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rm b small{font:500 12px var(--ui);color:var(--mut)}
+.rm small{font:12px var(--ui);color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rv{font:700 17px var(--body);white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+.rv small{display:block;font:12px var(--ui);color:var(--mut)}
+.rl{font:600 10.5px var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);padding:10px 12px 2px}
+.tw{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:auto;-webkit-overflow-scrolling:touch}
+.tw table{border-collapse:separate;border-spacing:0;min-width:100%}
+.tw th{position:sticky;top:0;z-index:3;background:var(--card);font:600 11px var(--ui);text-transform:uppercase;letter-spacing:.05em;color:var(--mut);padding:6px 7px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.tw th small{display:block;font:500 10px var(--ui);letter-spacing:0;text-transform:none}
+.tw td{height:46px;padding:0 7px;text-align:right;font:700 15px var(--body);white-space:nowrap;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.tw .c1{position:sticky;left:0;z-index:2;background:var(--card);text-align:left;min-width:136px;max-width:150px;overflow:hidden;box-shadow:1px 0 0 var(--line)}
+.tw .c9{position:sticky;right:0;z-index:2;background:var(--card);min-width:58px;box-shadow:-1px 0 0 var(--line);font-weight:800}
+.tw th.c1,.tw th.c9{z-index:4}
+.tw .gh td{background:var(--bg);height:auto;padding:7px 10px;text-align:left;font:600 11px var(--ui);text-transform:uppercase;letter-spacing:.07em;color:var(--mut)}
+.tw .gh td .gt{position:sticky;left:10px}
+.tc{display:flex;align-items:center;gap:7px}.tc .rm b{font-size:15px}
+.tw .out .rm b{color:var(--mut)}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+.ah{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 2px 6px;font:12px var(--ui);color:var(--mut)}
+.sel{display:block;width:100%;font:600 14px var(--ui);padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);margin-bottom:8px}
+.card>.sel{width:calc(100% - 24px);margin:8px 12px}
+.sg{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin-bottom:8px}
+.sgh{display:flex;align-items:center;gap:8px;margin-bottom:6px;font:700 14px var(--ui)}.sgh small{margin-left:auto;color:var(--mut);font:12px var(--ui)}
+.sgh .lv{color:#e0242f}
+.net{font:700 11px var(--ui);background:var(--fg);color:var(--bg);padding:3px 8px;border-radius:99px;letter-spacing:.03em}
+.sgt{display:flex;align-items:center;gap:8px;min-height:36px;font:700 18px var(--body)}
+.sgt i{font:600 12px var(--ui);font-style:normal;color:var(--mut);width:14px;text-align:right}
+.sgt span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sgt em{font:700 18px var(--body);font-style:normal;font-variant-numeric:tabular-nums;color:var(--mut);min-width:30px;text-align:right}
+.sgt em.w{color:var(--fg)}.sgt.lost span{color:var(--mut)}
+table.atg{border-collapse:collapse;width:100%;font:600 12px var(--ui);font-variant-numeric:tabular-nums}
+table.atg th,table.atg td{padding:7px 4px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+table.atg th{font:600 11px var(--ui);color:var(--mut)}table.atg .c1{text-align:left;width:1%;padding-left:12px}
+table.atg td:last-child,table.atg th:last-child{padding-right:12px}
+.hbr{display:grid;grid-template-columns:44px minmax(0,1fr) 52px;gap:8px;align-items:center;padding:4px 12px;font:600 12px var(--ui)}
+.hbr b{text-align:right;font-variant-numeric:tabular-nums}
+.hbt{position:relative;height:10px;background:var(--seg);border-radius:3px;overflow:hidden}
+.hbt i{position:absolute;top:0;bottom:0}.hbt .mid{left:50%;width:1px;background:var(--mut);opacity:.5}.hbt .fill{border-radius:3px;max-width:100%}
+.note{font:12px var(--ui);color:var(--mut);padding:8px 12px 12px}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:0 12px 6px}
+.tiles div{background:var(--seg);border-radius:8px;padding:7px 8px}
+.tiles small{display:block;font:600 10px var(--ui);color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+.tiles b{font:700 18px var(--body)}
+.yrh{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:baseline;padding:9px 12px 4px;border-top:1px solid var(--line);font:600 12px var(--ui)}
+.yrh span{color:var(--mut);font-weight:500}.yrh b{font:700 16px var(--body)}
+.yrr{display:grid;grid-template-columns:auto minmax(0,1fr) 40px 46px 56px;gap:6px;align-items:center;padding:4px 12px;font:600 13px var(--ui);font-variant-numeric:tabular-nums}
+.yrr>span:nth-child(n+3){text-align:right}.yrr small{color:var(--mut);font-weight:500}
+.drill{background:var(--seg);padding:4px 0 6px;border-bottom:1px solid var(--line)}
+.foot{text-align:center;margin:14px 0 4px;font-size:11px}
+@media(min-width:700px){.col{flex-basis:210px}}
+</style></head>
+<body>
+<header><button class="burger" id="burger" aria-label="Open menu" onclick="dr(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><h1 onclick="go('bracket')">Oak Street <span>Auctions</span></h1><div class="rule"></div><div class="evpick" id="evpick"></div></header>
+<nav id="nav"></nav>
+<div class="drawer" id="drawer"><div class="drawer-bg" onclick="dr(0)"></div><div class="drawer-card" id="drawerCard" role="dialog" aria-label="Menu"></div></div>
+<div class="wrap">
+<div class="tabs" id="tabs"></div>
+<div id="main"></div>
+<div class="sub foot" id="st"></div>
+</div>
+<script>
+/* ===== NFL Playoff auction. Each year: payout % per win (Wild Card, Divisional, Conference, Super Bowl),
+   the 14 teams with conference, seed and buyer(s) + price, and the playoff games (from ESPN).
+   A new year only needs pay + teams and espn:true; the games then come from ESPN live. ===== */
+const YEARS={"2021":{"pay":[3.5,6.5,15,23],"teams":[["AFC",1,"KC",[["KAISER. K",40]]],["AFC",2,"BUF",[["BOHNERT. J",30]]],["AFC",3,"PIT",[["BRADBURY. C",20]]],["AFC",4,"TEN",[["BRADBURY. C",25]]],["AFC",5,"BAL",[["FLATH. H",15]]],["AFC",6,"CLE",[["BOHNERT. J",10]]],["AFC",7,"IND",[["BRADBURY. C",15]]],["NFC",1,"GB",[["FLATH. H",35]]],["NFC",2,"NO",[["FRENCH. C",30]]],["NFC",3,"SEA",[["FLATH. H",25]]],["NFC",4,"WSH",[["BRADBURY. C",10]]],["NFC",5,"TB",[["KAISER. K",30]]],["NFC",6,"LAR",[["FRENCH. C",10]]],["NFC",7,"CHI",[["BOHNERT. J",10]]]],"games":[[1,"2021-01-09T18:05Z","CBS","IND",24,"BUF",27],[1,"2021-01-09T21:40Z","Fox","LAR",30,"SEA",20],[1,"2021-01-10T01:15Z","NBC","TB",31,"WSH",23],[1,"2021-01-10T18:05Z","ABC","BAL",20,"TEN",13],[1,"2021-01-10T21:40Z","CBS","CHI",9,"NO",21],[1,"2021-01-11T01:15Z","NBC","CLE",48,"PIT",37],[2,"2021-01-16T21:35Z","Fox","LAR",18,"GB",32],[2,"2021-01-17T01:15Z","NBC","BAL",3,"BUF",17],[2,"2021-01-17T20:05Z","CBS","CLE",17,"KC",22],[2,"2021-01-17T23:40Z","Fox","TB",30,"NO",20],[3,"2021-01-24T20:05Z","Fox","TB",31,"GB",26],[3,"2021-01-24T23:40Z","CBS","BUF",24,"KC",38],[5,"2021-02-07T23:30Z","CBS","KC",9,"TB",31]]},"2022":{"pay":[5,7,12,18],"teams":[["AFC",1,"TEN",[["BRADBURY. C",36]]],["AFC",2,"KC",[["KAISER. K",39]]],["AFC",3,"BUF",[["BOHNERT. J",38]]],["AFC",4,"CIN",[["FLATH. H",30]]],["AFC",5,"LV",[["BRADBURY. C",13]]],["AFC",6,"NE",[["BRADBURY. C",15]]],["AFC",7,"PIT",[["KAISER. K",5]]],["NFC",1,"GB",[["FLATH. H",45]]],["NFC",2,"TB",[["KAISER. K",38]]],["NFC",3,"DAL",[["BOHNERT. J",25]]],["NFC",4,"LAR",[["FRENCH. C",33]]],["NFC",5,"ARI",[["BRADBURY. C",25]]],["NFC",6,"SF",[["BRADBURY. C",21]]],["NFC",7,"PHI",[["FRENCH. C",5]]]],"games":[[1,"2022-01-15T21:30Z","NBC","LV",19,"CIN",26],[1,"2022-01-16T01:15Z","CBS","NE",17,"BUF",47],[1,"2022-01-16T18:00Z","Fox","PHI",15,"TB",31],[1,"2022-01-16T21:30Z","CBS","SF",23,"DAL",17],[1,"2022-01-17T01:15Z","NBC","PIT",21,"KC",42],[1,"2022-01-18T01:15Z","ABC","ARI",11,"LAR",34],[2,"2022-01-22T21:30Z","CBS","CIN",19,"TEN",16],[2,"2022-01-23T01:15Z","Fox","SF",13,"GB",10],[2,"2022-01-23T20:00Z","NBC","LAR",30,"TB",27],[2,"2022-01-23T23:30Z","CBS","BUF",36,"KC",42],[3,"2022-01-30T20:00Z","CBS","CIN",27,"KC",24],[3,"2022-01-30T23:30Z","Fox","SF",17,"LAR",20],[5,"2022-02-13T23:30Z","NBC","LAR",23,"CIN",20]]},"2023":{"pay":[6,8,10,12],"teams":[["AFC",1,"KC",[["FRENCH. C",48]]],["AFC",2,"BUF",[["BRADBURY. C",35],["FLATH. H",35]]],["AFC",3,"CIN",[["KAISER. K",42]]],["AFC",4,"JAX",[["BOHNERT. J",15]]],["AFC",5,"LAC",[["KAISER. K",18]]],["AFC",6,"BAL",[["BRADBURY. C",6]]],["AFC",7,"MIA",[["KAISER. K",5]]],["NFC",1,"PHI",[["FRENCH. C",34]]],["NFC",2,"SF",[["BOHNERT. J",34]]],["NFC",3,"MIN",[["BRADBURY. C",17]]],["NFC",4,"TB",[["KAISER. K",14]]],["NFC",5,"DAL",[["FLATH. H",15]]],["NFC",6,"NYG",[["FLATH. H",10]]],["NFC",7,"SEA",[["KAISER. K",10]]]],"games":[[1,"2023-01-14T21:30Z","Fox","SEA",23,"SF",41],[1,"2023-01-15T01:15Z","NBC","LAC",30,"JAX",31],[1,"2023-01-15T18:00Z","CBS","MIA",31,"BUF",34],[1,"2023-01-15T21:50Z","Fox","NYG",31,"MIN",24],[1,"2023-01-16T01:15Z","NBC","BAL",17,"CIN",24],[1,"2023-01-17T01:15Z","ABC","DAL",31,"TB",14],[2,"2023-01-21T21:30Z","NBC","JAX",20,"KC",27],[2,"2023-01-22T01:15Z","Fox","NYG",7,"PHI",38],[2,"2023-01-22T20:00Z","CBS","CIN",27,"BUF",10],[2,"2023-01-22T23:30Z","Fox","DAL",12,"SF",19],[3,"2023-01-29T20:00Z","Fox","SF",7,"PHI",31],[3,"2023-01-29T23:30Z","CBS","CIN",20,"KC",23],[5,"2023-02-12T23:30Z","Fox","KC",38,"PHI",35]]},"2024":{"pay":[6,8,10,12],"teams":[["AFC",1,"BAL",[["FLATH. H",75]]],["AFC",2,"BUF",[["KAISER. K",54]]],["AFC",3,"KC",[["STONE. J",41]]],["AFC",4,"HOU",[["BRADBURY. C",36]]],["AFC",5,"CLE",[["FLATH. H",40]]],["AFC",6,"MIA",[["FRENCH. C",28]]],["AFC",7,"PIT",[["STONE. J",18]]],["NFC",1,"SF",[["KAISER. K",78]]],["NFC",2,"DAL",[["FLATH. H",50]]],["NFC",3,"DET",[["FRENCH. C",45]]],["NFC",4,"TB",[["STONE. J",25]]],["NFC",5,"PHI",[["FRENCH. C",34]]],["NFC",6,"LAR",[["BRADBURY. C",27]]],["NFC",7,"GB",[["FRENCH. C",18]]]],"games":[[1,"2024-01-13T21:30Z","NBC","CLE",14,"HOU",45],[1,"2024-01-14T01:00Z","Peacock","MIA",7,"KC",26],[1,"2024-01-14T21:30Z","Fox","GB",48,"DAL",32],[1,"2024-01-15T01:15Z","NBC","LAR",23,"DET",24],[1,"2024-01-15T21:30Z","CBS","PIT",17,"BUF",31],[1,"2024-01-16T01:15Z","ESPN","PHI",9,"TB",32],[2,"2024-01-20T21:30Z","ESPN","HOU",10,"BAL",34],[2,"2024-01-21T01:15Z","Fox","GB",21,"SF",24],[2,"2024-01-21T20:00Z","NBC","TB",23,"DET",31],[2,"2024-01-21T23:30Z","CBS","KC",27,"BUF",24],[3,"2024-01-28T20:00Z","CBS","KC",17,"BAL",10],[3,"2024-01-28T23:30Z","Fox","DET",31,"SF",34],[5,"2024-02-11T23:30Z","CBS","SF",22,"KC",25]]},"2025":{"pay":[6,8,10,12],"teams":[["AFC",1,"KC",[["KAISER. K",62]]],["AFC",2,"BUF",[["BRADBURY. C",65]]],["AFC",3,"BAL",[["FLATH. H",60]]],["AFC",4,"HOU",[["KAISER. K",25]]],["AFC",5,"LAC",[["FRENCH. C",38]]],["AFC",6,"PIT",[["BOHNERT. J",12]]],["AFC",7,"DEN",[["KAISER. K",10]]],["NFC",1,"DET",[["BOHNERT. J",68]]],["NFC",2,"PHI",[["FRENCH. C",84]]],["NFC",3,"TB",[["FLATH. H",30]]],["NFC",4,"LAR",[["BOHNERT. J",36]]],["NFC",5,"MIN",[["BRADBURY. C",35]]],["NFC",6,"WSH",[["KAISER. K",38]]],["NFC",7,"GB",[["FLATH. H",20]]]],"games":[[1,"2025-01-11T21:30Z","CBS","LAC",12,"HOU",32],[1,"2025-01-12T01:00Z","Prime Video","PIT",14,"BAL",28],[1,"2025-01-12T18:00Z","CBS","DEN",7,"BUF",31],[1,"2025-01-12T21:30Z","Fox","GB",10,"PHI",22],[1,"2025-01-13T01:00Z","NBC","WSH",23,"TB",20],[1,"2025-01-14T01:00Z","ESPN","MIN",9,"LAR",27],[2,"2025-01-18T21:30Z","ESPN","HOU",14,"KC",23],[2,"2025-01-19T01:00Z","Fox","WSH",45,"DET",31],[2,"2025-01-19T20:00Z","NBC","LAR",22,"PHI",28],[2,"2025-01-19T23:30Z","CBS","BAL",25,"BUF",27],[3,"2025-01-26T20:00Z","Fox","WSH",23,"PHI",55],[3,"2025-01-26T23:30Z","CBS","BUF",29,"KC",32],[5,"2025-02-09T23:30Z","Fox","KC",22,"PHI",40]]},"2026":{"pay":[6,8,10,12],"teams":[["AFC",1,"DEN",[["KAISER. K",80]]],["AFC",2,"NE",[["BRADBURY. C",55]]],["AFC",3,"JAX",[["KAISER. K",25]]],["AFC",4,"PIT",[["MILLER. J",15]]],["AFC",5,"HOU",[["FLATH. H",35]]],["AFC",6,"BUF",[["MILLER. J",50]]],["AFC",7,"LAC",[["FLATH. H",18]]],["NFC",1,"SEA",[["BOHNERT. J",48]]],["NFC",2,"CHI",[["KAISER. K",40]]],["NFC",3,"PHI",[["FLATH. H",15]]],["NFC",4,"CAR",[["KAISER. K",10]]],["NFC",5,"LAR",[["MILLER. J",70]]],["NFC",6,"SF",[["BRADBURY. C",25]]],["NFC",7,"GB",[["MILLER. J",25]]]],"games":[[1,"2026-01-10T21:30Z","Fox","LAR",34,"CAR",31],[1,"2026-01-11T01:00Z","Prime Video","GB",27,"CHI",31],[1,"2026-01-11T18:00Z","CBS","BUF",27,"JAX",24],[1,"2026-01-11T21:30Z","Fox","SF",23,"PHI",19],[1,"2026-01-12T01:15Z","NBC","LAC",3,"NE",16],[1,"2026-01-13T01:15Z","ESPN","HOU",30,"PIT",6],[2,"2026-01-17T21:30Z","CBS","BUF",30,"DEN",33],[2,"2026-01-18T01:00Z","Fox","SF",6,"SEA",41],[2,"2026-01-18T20:00Z","ESPN","HOU",16,"NE",28],[2,"2026-01-18T23:30Z","NBC","LAR",20,"CHI",17],[3,"2026-01-25T20:00Z","CBS","NE",10,"DEN",7],[3,"2026-01-25T23:30Z","Fox","LAR",27,"SEA",31],[5,"2026-02-08T23:30Z","NBC","SEA",29,"NE",13]]}};
+const TEAMS={ARI:"Cardinals",ATL:"Falcons",BAL:"Ravens",BUF:"Bills",CAR:"Panthers",CHI:"Bears",CIN:"Bengals",CLE:"Browns",DAL:"Cowboys",DEN:"Broncos",DET:"Lions",GB:"Packers",HOU:"Texans",IND:"Colts",JAX:"Jaguars",KC:"Chiefs",LAC:"Chargers",LAR:"Rams",LV:"Raiders",MIA:"Dolphins",MIN:"Vikings",NE:"Patriots",NO:"Saints",NYG:"Giants",NYJ:"Jets",PHI:"Eagles",PIT:"Steelers",SEA:"Seahawks",SF:"49ers",TB:"Buccaneers",TEN:"Titans",WSH:"Commanders"};
+const TNAME=(a,y)=>a==="WSH"&&+y<=2022?(+y===2021?"Football Team":"Commanders"):TEAMS[a]||a;
+/* Bidder colors shared with the golf site (name, chip color, chip text), most senior first. */
+const MASTER=[["STONE. B","#BDFD50","#000"],["MILLER. J","#D7BFFA","#000"],["WYNDHAM. R","#DD45DF","#fff"],["BOYD. D","#926531","#fff"],["BOYD IV. B","#CCD9F5","#000"],["HOUSE. C","#BDFDC8","#000"],["WOODWARD. R","#D7BFFA","#000"],["STONE. J","#FEFACD","#000"],["BOHNERT. J","#60B158","#fff"],["FLATH. B","#F19E38","#000"],["WILLIAMS. K","#60B158","#fff"],["CLAYTON. D","#000070","#fff"],["BRADBURY. C","#B2A7D2","#000"],["FLATH. H","#4A62D1","#fff"],["FRENCH. C","#D3354F","#fff"],["FOUGEROUSSE. D","#70D1F0","#000"],["KAISER. K","#FAE250","#000"],["BOYD II. B","#8529AE","#fff"],["OLSON. T","#F1C0D3","#000"],["BRADBURY. D","#EC5E2B","#000"],["BOYD III. B","#75140C","#fff"],["FIDLER. J","#BDFD50","#000"],["WOODWARD. N","#75140C","#fff"],["BOYD. B","#5C9790","#fff"],["MYERS. J","#EC5E2B","#000"],["POWELL. H","#F1C0D3","#000"],["THOMPSON. J","#BDFD50","#000"],["JERRELLS. L","#5D0E07","#fff"],["FLATER. B","#75FB4C","#000"],["FISH. JD","#926531","#fff"]];
+const SPARE=["#1B3459","#8C2A65","#3A591B","#12B886","#F29085","#8C8C07","#499DF2","#E0177F","#2B2BD9","#AD0CF2"];
+const RND=["Wild Card","Divisional","Conference","Super Bowl"],RS=["WC","DIV","CONF","SB"],WK={1:0,2:1,3:2,4:3,5:3};
+const $=id=>document.getElementById(id);
+const fm=n=>"$"+Math.round(n).toLocaleString(),sg=n=>(n=Math.round(n),(n<0?"−":n>0?"+":"")+fm(Math.abs(n))),cl=n=>(n=Math.round(n))<0?"neg":n>0?"pos":"";
+const SC=n=>Math.round(n)<0?"var(--neg)":Math.round(n)>0?"var(--pos)":"inherit";
+const lum=c=>{const n=parseInt(c.slice(1),16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))/255};
+const disp=n=>{const m=n.match(/^(.+?)\.\s*([A-Z]{1,3})$/);if(!m)return n;const l=m[1].toLowerCase().replace(/(^|[\s'-])\w/g,c=>c.toUpperCase());return(m[2].length>1?m[2]+" ":m[2]+". ")+l};
+const autoTag=(n,three)=>{const m=n.match(/^(.+?)\.\s*([A-Z]{1,3})$/);if(!m)return n.slice(0,2).toUpperCase();const w=m[1].split(/\s+/),sx={II:"2",III:"3",IV:"4"}[w[w.length-1]];const l=w[0].replace(/[^A-Z]/g,"");return sx?m[2]+l[0]+sx:three?m[2]+l.slice(0,2):m[2]+l[0]};
+/* chips for one year: master colors by seniority; a clash gives the junior bidder a spare color */
+function mkLook(names){const MI=new Map(MASTER.map((m,i)=>[m[0],i])),usedC=new Set(),usedT=new Set(),L={};let sp=0;
+  names.slice().sort((a,b)=>(MI.has(a)?MI.get(a):999)-(MI.has(b)?MI.get(b):999)||a.localeCompare(b)).forEach(n=>{const m=MASTER[MI.get(n)];let c=m?m[1]:"",fg=m?m[2]:"";
+    if(!c||usedC.has(c)){while(usedC.has(SPARE[sp]))sp++;c=SPARE[sp++]||"#8b95a3";fg=lum(c)>.6?"#000":"#fff"}usedC.add(c);
+    let t=autoTag(n,0);if(/\d$/.test(autoTag(n,1)))t=autoTag(n,1);else if(usedT.has(t))t=autoTag(n,1);usedT.add(t);L[n]={n,d:disp(n),c,fg,tag:t}});return L}
+const chip=(L,own,cls="dt")=>{if(!own||!own.length)return`<span class="${cls}" style="background:#8b95a3;color:#fff">—</span>`;if(own.length===1){const b=L[own[0][0]];return`<span class="${cls}" style="background:${b.c};color:${b.fg}">${b.tag}</span>`}
+  const a=L[own[0][0]],b=L[own[1][0]];return`<span class="${cls}" style="background:linear-gradient(90deg,${a.c} 50%,${b.c} 50%);color:${a.fg};text-shadow:0 0 3px ${a.fg==="#000"?"#fff":"#000"}">${a.tag}/${b.tag}</span>`};
+
+let YR,view="bracket",tab=null,sel=null,asort="seed",swho="",srnd=null,stab="rec",sopen=null,sbid="",LIVE=null,LIVE_T=null;
+/* ===== one year: pot, wins, payouts per team and per bidder ===== */
+function calc(y){const Y=YEARS[y],games=(LIVE&&LIVE.y===y?LIVE.games:Y.games)||[];
+  const T={};Y.teams.forEach(([conf,s,a,own])=>T[a]={a,conf,s,own,n:TNAME(a,y),bid:own.reduce((x,o)=>x+o[1],0),w:0,won:0,out:false,wins:[]});
+  const pot=Object.values(T).reduce((x,t)=>x+t.bid,0);
+  const G=games.map(g=>{const [w,d,net,a,as,h,hs,st,det]=g,done=st?st==="post":true;return{w,r:WK[w],d,net,a,as,h,hs,st:st||"post",det:det||"",done,win:done?(as>hs?a:hs>as?h:null):null}});
+  G.forEach(g=>{if(g.win&&T[g.win]){const t=T[g.win];t.w++;t.wins.push(g.r);t.won+=pot*Y.pay[g.r]/100;const l=g.win===g.a?g.h:g.a;if(T[l])T[l].out=true}});
+  const names=[...new Set(Y.teams.flatMap(t=>t[3].map(o=>o[0])))],L=mkLook(names);
+  const B={};names.forEach(n=>B[n]={n,sp:0,won:0,teams:[],alive:0});
+  Object.values(T).forEach(t=>t.own.forEach(([n,p])=>{const b=B[n],sh=t.bid?p/t.bid:1/t.own.length;b.sp+=p;b.won+=t.won*sh;b.teams.push(t);if(!t.out)b.alive++}));
+  const sb=G.find(g=>g.r===3&&g.win),champ=sb?T[sb.win]:null;
+  return{y,Y,T,G,pot,L,B,champ,done:!!champ}}
+
+/* ===== bracket (re-seeded: the 1 seed plays the lowest seed left) ===== */
+function confRounds(S,conf){const ts=Object.values(S.T).filter(t=>t.conf===conf).sort((a,b)=>a.s-b.s),bs=s=>ts.find(t=>t.s===s);
+  const find=(r,a,b)=>a&&b?S.G.find(g=>g.r===r&&((g.a===a.a&&g.h===b.a)||(g.a===b.a&&g.h===a.a))):null;
+  const wc=[[2,7],[3,6],[4,5]].map(([x,z])=>[bs(x),bs(z)]);
+  const winOf=(p,r)=>{const g=find(r,p[0],p[1]);return g&&g.win?S.T[g.win]:null};
+  const wcw=wc.map(p=>winOf(p,0));let dv=[[null,null],[null,null]];
+  if(wcw.every(Boolean)){const left=[bs(1),...wcw].sort((a,b)=>a.s-b.s);dv=[[left[0],left[3]],[left[1],left[2]]]}
+  else dv=[[bs(1),null],[null,null]];
+  const dvw=dv.map(p=>p[0]&&p[1]?winOf(p,1):null);const cf=[dvw[0],dvw[1]].sort((a,b)=>(a?a.s:9)-(b?b.s:9));const cw=cf[0]&&cf[1]?winOf(cf,2):null;
+  return{bye:bs(1),wc,dv,cf,cw,find}}
+function slot(S,t,opp,r,find){if(!t)return'<div class="slot tbd">TBD</div>';const g=opp?find(r,t,opp):null,out=g&&g.win&&g.win!==t.a,k=(out?" out":"")+(sel&&!t.own.some(o=>o[0]===sel)?" fade":"");
+  const sc=g&&(g.done||g.st==="in")?(g.a===t.a?g.as:g.hs):"";
+  return`<div class="slot${k}">${chip(S.L,t.own,"").replace('<span class=""','<b').replace("</span>","</b>")}<i>${t.s}</i><span>${t.n}</span>${sc!==""?`<em>${sc}</em>`:""}</div>`}
+const gameHTML=(S,p,r,find,label)=>{const g=p[0]&&p[1]?find(r,p[0],p[1]):null,lab=label||(g?(g.st==="in"?`<span style="color:#e0242f">${g.det||"Live"}</span>`:g.done?"Final":dtl(g.d)):"");
+  return`<div class="g">${lab?`<div class="gl">${lab}</div>`:""}${slot(S,p[0],p[1],r,find)}${slot(S,p[1],p[0],r,find)}</div>`};
+const dtl=d=>{const x=new Date(d);return isNaN(x)?"":x.toLocaleDateString(undefined,{weekday:"short",month:"numeric",day:"numeric"}).replace(",","")+" · "+x.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})};
+function bracketHTML(S){if(tab==="Super Bowl"){const a=confRounds(S,"AFC"),n=confRounds(S,"NFC"),find=a.find,p=[a.cw,n.cw],g=p[0]&&p[1]?find(3,p[0],p[1]):null;
+    return`<div class="bracket"><div class="col"><h4>Super Bowl</h4><div class="games">${gameHTML(S,p,3,find)}</div></div><div class="col"><h4>Champion</h4><div class="games"><div class="g">${S.champ?slot(S,S.champ):'<div class="slot tbd">TBD</div>'}</div></div></div></div>`}
+  const R=confRounds(S,tab),f=R.find;
+  return`<div class="bracket"><div class="col"><h4>Wild Card</h4><div class="games"><div class="g"><div class="gl">First-round bye</div>${slot(S,R.bye)}</div>${R.wc.map(p=>gameHTML(S,p,0,f)).join("")}</div></div>
+  <div class="col"><h4>Divisional</h4><div class="games">${R.dv.map(p=>gameHTML(S,p,1,f)).join("")}</div></div>
+  <div class="col"><h4>${tab} Championship</h4><div class="games">${gameHTML(S,R.cf,2,f)}</div></div>
+  <div class="col"><h4>${tab} Champion</h4><div class="games"><div class="g">${R.cw?slot(S,R.cw):'<div class="slot tbd">TBD</div>'}</div></div></div></div>`}
+
+/* ===== standings ===== */
+function standHTML(S){const rows=Object.values(S.B).map(b=>Object.assign(b,{net:Math.round(b.won)-Math.round(b.sp)})).sort((a,b)=>b.net-a.net||b.won-a.won);
+  return`<div class="sub">Ranked by net (won minus paid). Pays per win, % of pot: ${S.Y.pay.map((p,i)=>RND[i]+" "+p+"%").join(" · ")}</div><div class="card">`+rows.map((r,i)=>{const b=S.L[r.n];
+  return`<div class="r tap" onclick="pk('${r.n}')"><span class="rk">${i+1}</span><span class="dt" style="background:${b.c};color:${b.fg}">${b.tag}</span><div class="rm"><b>${b.d}${S.champ&&S.champ.own.some(o=>o[0]===r.n)?" 🏆":""}</b><small>${S.done?r.teams.length+" team"+(r.teams.length>1?"s":""):r.alive+"/"+r.teams.length+" alive"} · paid ${fm(r.sp)}</small></div><div class="rv"><span class="${cl(r.net)}">${sg(r.net)}</span><small>won ${fm(r.won)}</small></div></div>`}).join("")+`</div>`}
+
+/* ===== auction ===== */
+function aucHTML(S){const lots=Object.values(S.T),pays=S.Y.pay.map(p=>S.pot*p/100),net=t=>Math.round(t.won)-Math.round(t.bid);
+  let g;if(asort==="seed")g=["AFC","NFC"].map(c=>({h:c,r:lots.filter(t=>t.conf===c).sort((a,b)=>a.s-b.s)}));
+  else if(asort==="bidder")g=Object.keys(S.B).sort((a,b)=>S.L[a].d.localeCompare(S.L[b].d)).map(n=>({h:S.L[n].d,r:lots.filter(t=>t.own.some(o=>o[0]===n)).sort((a,b)=>b.bid-a.bid)}));
+  else g=[{h:"",r:lots.sort(asort==="net"?(a,b)=>net(b)-net(a)||b.bid-a.bid:(a,b)=>b.bid-a.bid)}];
+  const wc=t=>[0,1,2,3].map(k=>{const n=t.wins.filter(r=>r===k).length;return n?`<td class="pos">${fm(pays[k]*n)}</td>`:"<td></td>"}).join("");
+  const row=t=>`<tr class="${t.out?"out":""}"><td class="c1"><div class="tc">${chip(S.L,t.own,"tg")}<div class="rm"><b>${t.n}</b><small>${t.conf} ${t.s} seed${t.own.length>1?" · split "+t.own.map(o=>fm(o[1])).join("/"):""}</small></div></div></td><td>${fm(t.bid)}</td>${wc(t)}<td class="c9 ${cl(net(t))}">${sg(net(t))}</td></tr>`;
+  const head=`<thead><tr><th class="c1">Team</th><th>Paid</th>${RS.map((l,k)=>`<th>${l}<small>${S.Y.pay[k]}%</small></th>`).join("")}<th class="c9">Net</th></tr></thead>`;
+  const body=g.map(x=>(x.h?`<tr class="gh"><td colspan="7"><span class="gt">${x.h} · paid ${fm(x.r.reduce((a,t)=>a+t.bid,0))} · net ${sg(x.r.reduce((a,t)=>a+net(t),0))}</span></td></tr>`:"")+x.r.map(row).join("")).join("");
+  return`<div class="ah"><span>${fm(S.pot)} pot</span><div class="tabs sm">${[["seed","Seed"],["price","Price"],["bidder","Bidder"],["net","Net"]].map(([k,n])=>`<button class="tab${asort===k?" on":""}" onclick="srt('${k}')">${n}</button>`).join("")}</div></div><div class="tw"><table>${head}<tbody>${body}</tbody></table></div>
+  <div class="note" style="padding-left:2px">Each win pays the team's owner that round's % of the pot. Shared teams split the pot and winnings by what each paid.</div>`}
+
+/* ===== schedule ===== */
+function schedHTML(S){let G=S.G.slice();if(swho)G=G.filter(g=>[g.a,g.h].some(a=>S.T[a]&&S.T[a].own.some(o=>o[0]===swho)));
+  const rs=[...new Set(S.G.map(g=>g.r))].sort();if(!rs.includes(srnd))srnd=(S.G.find(g=>!g.done)||{}).r??rs[rs.length-1];
+  const row=(a,sc,won,live)=>{const t=S.T[a];return`<div class="sgt${won===false?" lost":""}">${t?chip(S.L,t.own,"tg"):'<span class="tg" style="background:var(--seg);color:var(--mut)">?</span>'}<i>${t?t.s:""}</i><span>${t?t.n:TEAMS[a]||a}</span>${sc===null?"":`<em${won||live?' class="w"':""}>${sc}</em>`}</div>`};
+  const cards=G.filter(g=>g.r===srnd).sort((x,z)=>new Date(x.d)-new Date(z.d)).map(g=>{const pl=g.done||g.st==="in";
+    return`<div class="sg"><div class="sgh"><b${g.st==="in"?' class="lv"':""}>${g.st==="in"?(g.det||"Live"):g.done?"Final":dtl(g.d)}</b>${g.net?`<span class="net">${g.net}</span>`:""}<small>${g.done?dtl(g.d).split(" · ")[0]:""}</small></div>${row(g.a,pl?g.as:null,g.done?g.win===g.a:undefined,g.st==="in")}${row(g.h,pl?g.hs:null,g.done?g.win===g.h:undefined,g.st==="in")}</div>`}).join("")||`<div class="sub">No games for that pick.</div>`;
+  return`<select class="sel" onchange="swo(this.value)"><option value="">All teams</option>${Object.keys(S.B).sort((a,b)=>S.L[a].d.localeCompare(S.L[b].d)).map(n=>`<option value="${n}"${n===swho?" selected":""}>${S.L[n].d} · ${S.L[n].tag}</option>`).join("")}</select>
+  <div class="tabs">${rs.map(r=>`<button class="tab${r===srnd?" on":""}" onclick="srd(${r})">${RND[r]}</button>`).join("")}</div>${cards}`}
+
+/* ===== all years together (finished years only) ===== */
+let ALLC=null;
+function allData(){if(ALLC)return ALLC;const ys=Object.keys(YEARS).sort().map(y=>calc(y)).filter(S=>S.done),names=[...new Set(ys.flatMap(S=>Object.keys(S.B)))],look=mkLook(names);
+  // all-time chips: everyone in their master color
+  names.forEach(n=>{const m=MASTER.find(x=>x[0]===n);if(m){look[n].c=m[1];look[n].fg=m[2]}});
+  const lots=[];ys.forEach(S=>Object.values(S.T).forEach(t=>t.own.forEach(([n,p])=>{const sh=t.bid?p/t.bid:1;lots.push({y:S.y,own:n,team:t.n,a:t.a,conf:t.conf,s:t.s,bid:p,won:t.won*sh,w:t.w,champ:S.champ===t,shared:t.own.length>1})})));
+  return ALLC={ys,names,look,lots}}
+function allHTML(){const A=allData(),rows=A.names.map(n=>{const my=A.lots.filter(l=>l.own===n),sp=my.reduce((a,l)=>a+l.bid,0),won=my.reduce((a,l)=>a+l.won,0),by={};
+  A.ys.forEach(S=>{if(S.B[n])by[S.y]=Math.round(S.B[n].won)-Math.round(S.B[n].sp)});return{n,b:A.look[n],sp,won,net:Math.round(won)-Math.round(sp),by,t:A.ys.filter(S=>S.champ&&S.champ.own.some(o=>o[0]===n))}}).sort((a,b)=>b.net-a.net);
+  const pot=A.ys.reduce((a,S)=>a+S.pot,0),yk=A.ys.map(S=>S.y).reverse();
+  let h=`<div class="sub">${A.ys.length} Super Bowls · ${fm(pot)} in pots · ranked by net</div><div class="card">`+rows.map((r,i)=>`<div class="r"><span class="rk">${i+1}</span><span class="dt" style="background:${r.b.c};color:${r.b.fg}">${r.b.tag}</span><div class="rm"><b>${r.b.d}${r.t.length?" "+"🏆".repeat(r.t.length):""}</b><small>${Object.keys(r.by).length} yr${Object.keys(r.by).length>1?"s":""} · paid ${fm(r.sp)} · won ${fm(r.won)}</small></div><div class="rv ${cl(r.net)}">${sg(r.net)}</div></div>`).join("")+`</div>`;
+  h+=`<div class="card"><div class="ch"><span>Net by year</span><span></span></div><div style="overflow-x:auto"><table class="atg"><thead><tr><th class="c1"></th>${yk.map(y=>`<th>’${y.slice(2)}</th>`).join("")}</tr></thead><tbody>`+rows.map(r=>`<tr><td class="c1"><span class="dt" style="background:${r.b.c};color:${r.b.fg}">${r.b.tag}</span></td>${yk.map(y=>r.by[y]==null?`<td style="color:var(--line)">—</td>`:`<td style="color:${SC(r.by[y])}">${sg(r.by[y])}</td>`).join("")}</tr>`).join("")+`</tbody></table></div></div>`;
+  h+=`<div class="card"><div class="ch"><span>Super Bowl champions</span><span>tap a year</span></div>`+A.ys.slice().reverse().map(S=>{const t=S.champ;return`<div class="r tap" onclick="setYear('${S.y}')"><span class="rk" style="width:28px">’${S.y.slice(2)}</span>${chip(A.look,t.own)}<div class="rm"><b>${t.n}</b><small>${t.own.map(o=>A.look[o[0]].d).join(" & ")} · paid ${fm(t.bid)} · ${fm(S.pot)} pot</small></div><div class="rv pos">${sg(t.won-t.bid)}</div></div>`}).join("")+`</div>`;
+  return h}
+
+/* ===== stats & records ===== */
+const tops=(a,f)=>{if(!a.length)return[];const v=a.map(f),m=Math.max(...v);return a.filter((_,i)=>v[i]===m)};
+const card=(t,b,r="")=>`<div class="card"><div class="ch"><span>${t}</span><span>${r}</span></div>${b}</div>`;
+const tagA=(L,n)=>{const b=L[n];return`<span class="dt" style="background:${b.c};color:${b.fg}">${b.tag}</span>`};
+function recHTML(A){const L=A.look,paid=A.lots.filter(l=>l.bid>0),row=(n,m,v,s,c)=>`<div class="r">${tagA(L,n)}<div class="rm"><b>${m}</b>${s?`<small>${s}</small>`:""}</div><div class="rv"${c?` style="color:${c}"`:""}>${v}</div></div>`;
+  const rec=(lab,list,f)=>!list.length?"":`<div class="rl">${lab}${list.length>1?` · ${list.length}-way tie`:""}</div>`+list.map(x=>row(...f(x))).join("");
+  const ny=[];A.ys.forEach(S=>Object.values(S.B).forEach(b=>ny.push({n:b.n,y:S.y,sp:b.sp,won:b.won,net:Math.round(b.won)-Math.round(b.sp)})));
+  const ch={};A.ys.forEach(S=>S.champ.own.forEach(o=>(ch[o[0]]=ch[o[0]]||[]).push(S)));const CH=Object.entries(ch).map(([n,a])=>({n,a}));
+  let h=rec("Best buy",tops(paid,l=>Math.round(l.won/l.bid*10)),l=>[l.own,`${l.team} <small>(${l.conf} ${l.s}) ’${l.y.slice(2)}</small>`,`${(l.won/l.bid).toFixed(1)}×`,`${fm(l.bid)} → ${fm(l.won)}`,SC(1)]);
+  h+=rec("Biggest bust",tops(paid.filter(l=>l.w===0),l=>l.bid),l=>[l.own,`${l.team} <small>(${l.conf} ${l.s}) ’${l.y.slice(2)}</small>`,sg(-l.bid),`${fm(l.bid)} paid · didn't win a game`,SC(-1)]);
+  h+=rec("Best single year",tops(ny,o=>o.net),o=>[o.n,`${L[o.n].d} · ${o.y}`,sg(o.net),`${fm(o.sp)} paid → ${fm(o.won)} won`,SC(o.net)]);
+  h+=rec("Worst single year",tops(ny,o=>-o.net),o=>[o.n,`${L[o.n].d} · ${o.y}`,sg(o.net),`${fm(o.sp)} paid → ${fm(o.won)} won`,SC(o.net)]);
+  h+=rec("Most Super Bowls owned",tops(CH,c=>c.a.length),c=>[c.n,L[c.n].d,"🏆".repeat(c.a.length),c.a.map(S=>`${S.champ.n} ’${S.y.slice(2)}`).join(", ")]);
+  h+=rec("Priciest champion",tops(A.ys,S=>S.champ.bid),S=>[S.champ.own[0][0],`${S.champ.n} · ${S.y}`,fm(S.champ.bid),""]);
+  h+=rec("Cheapest champion",tops(A.ys,S=>-S.champ.bid),S=>[S.champ.own[0][0],`${S.champ.n} · ${S.y}`,fm(S.champ.bid),""]);
+  const pr=S=>`<div class="r"><span class="dt" style="background:var(--seg);color:var(--fg)">’${S.y.slice(2)}</span><div class="rm"><b>${S.y} pot</b><small>${S.champ.n} won it</small></div><div class="rv">${fm(S.pot)}</div></div>`;
+  h+=`<div class="rl">Biggest pot</div>`+tops(A.ys,S=>S.pot).map(pr).join("")+`<div class="rl">Smallest pot</div>`+tops(A.ys,S=>-S.pot).map(pr).join("");
+  return card("Records",h,"ties all shown")}
+function seedHTML(A){const rows=[1,2,3,4,5,6,7].map(s=>{const a=A.lots.filter(l=>l.s===s),bid=a.reduce((x,l)=>x+l.bid,0),won=a.reduce((x,l)=>x+l.won,0),ts=A.ys.flatMap(S=>Object.values(S.T).filter(t=>t.s===s)),ps=ts.map(t=>t.bid);
+    return{s,n:ts.length,avg:ps.reduce((x,p)=>x+p,0)/ps.length,lo:Math.min(...ps),hi:Math.max(...ps),roi:won/bid-1,sb:ts.filter(t=>t.wins.includes(3)).length}});
+  const mx=Math.max(...rows.map(r=>Math.abs(r.roi)));
+  let h=`<div style="overflow-x:auto"><table class="atg"><thead><tr><th class="c1">Seed</th><th>Avg price</th><th>Range</th><th>Titles</th><th>ROI</th></tr></thead><tbody>`+rows.map(r=>`<tr><td class="c1"><b>${r.s}</b></td><td>${fm(r.avg)}</td><td style="color:var(--mut)">${fm(r.lo)}–${fm(r.hi)}</td><td>${r.sb}</td><td style="color:${SC(r.roi*100)}">${(r.roi>=0?"+":"−")+Math.abs(Math.round(r.roi*100))}%</td></tr>`).join("")+`</tbody></table></div>`;
+  h+=`<div class="sub" style="margin:10px 12px 6px">Return by seed</div>`+rows.map(r=>`<div class="hbr"><span>${r.s} seed</span><div class="hbt"><i class="mid"></i><i class="fill" style="${r.roi>=0?"left:50%":"right:50%"};width:${Math.abs(r.roi)/mx*50}%;background:${r.roi>=0?"#2a9d4b":"#d33"}"></i></div><b style="color:${SC(r.roi*100)}">${(r.roi>=0?"+":"−")+Math.abs(Math.round(r.roi*100))}%</b></div>`).join("");
+  h+=`<div class="note">Both conferences combined, all years. ROI = money won ÷ money paid for that seed. 1 seeds skip the Wild Card round, so they can't earn that payout.</div>`;
+  const h2=A.ys.slice().reverse().map(S=>{const v=Object.values(S.T).filter(t=>t.s===1).reduce((a,t)=>a+t.bid,0),pc=v/S.pot;return`<div class="hbr"><span>${S.y}</span><div class="hbt"><i class="fill" style="left:0;width:${pc*200}%;background:var(--acc)"></i></div><b>${Math.round(pc*100)}%</b></div>`}).join("");
+  return card("Seed value",h)+card("Share of the pot spent on 1 seeds",h2+`<div class="note">The two 1 seeds' price as a share of that year's pot.</div>`)}
+function yearRows(ls,L,showOwn){return`<div class="drill">`+ls.slice().sort((a,b)=>b.y-a.y).map(l=>`<div class="yrr">${showOwn?tagA(L,l.own):"<i></i>"}<span>${showOwn?l.y:l.team} <small>${showOwn?l.conf+" "+l.s:"’"+l.y.slice(2)+" · "+l.conf+" "+l.s}</small></span><small style="text-align:right">${l.champ?"🏆":l.w?l.w+"W":"—"}</small><span>${fm(l.bid)}</span><span style="color:${SC(l.won-l.bid)}">${sg(l.won-l.bid)}</span></div>`).join("")+`</div>`}
+function bidHTML(A){const L=A.look,names=A.names.slice().sort((a,b)=>L[a].d.localeCompare(L[b].d)),yrsOf={};A.lots.forEach(l=>(yrsOf[l.own]=yrsOf[l.own]||new Set()).add(l.y));
+  const gt={};A.lots.forEach(l=>{const k=l.own+"|"+l.a;(gt[k]=gt[k]||{n:l.own,a:l.a,team:l.team,ls:[]}).ls.push(l)});
+  const GT=Object.values(gt).filter(o=>o.ls.length>1).map(o=>Object.assign(o,{sp:o.ls.reduce((x,l)=>x+l.bid,0),won:o.ls.reduce((x,l)=>x+l.won,0)})).sort((a,b)=>b.ls.length-a.ls.length||(b.won-b.sp)-(a.won-a.sp));
+  let h=GT.map(o=>{const k="gt|"+o.n+"|"+o.a,op=sopen===k;return`<div class="r tap" onclick="sop('${k}')">${tagA(L,o.n)}<div class="rm"><b>${o.team}</b><small>${L[o.n].d} · ${o.ls.length} of ${yrsOf[o.n].size} years · ${fm(o.sp)} → ${fm(o.won)}</small></div><div class="rv" style="color:${SC(o.won-o.sp)}">${sg(o.won-o.sp)}</div></div>${op?yearRows(o.ls,L,true):""}`}).join("")||`<div class="note">No repeats yet.</div>`;
+  const s=sbid&&L[sbid]?sbid:"";let h2=`<select class="sel" onchange="sbd(this.value)"><option value="">Pick a bidder…</option>${names.map(n=>`<option value="${n}"${n===s?" selected":""}>${L[n].d} · ${L[n].tag}</option>`).join("")}</select>`;
+  if(s){const my=A.lots.filter(l=>l.own===s),sp=my.reduce((a,l)=>a+l.bid,0),won=my.reduce((a,l)=>a+l.won,0),pd=my.filter(l=>l.bid>0),best=tops(pd,l=>Math.round(l.won-l.bid)),worst=tops(pd,l=>-Math.round(l.won-l.bid)),titles=A.ys.filter(S=>S.champ.own.some(o=>o[0]===s)).length,roi=won/sp-1;
+    const fav={};my.forEach(l=>fav[l.team]=(fav[l.team]||0)+1);const favs=Object.entries(fav).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([t,c])=>`${t} ×${c}`).join(" · ");
+    h2+=`<div class="tiles"><div><small>Net</small><b style="color:${SC(won-sp)}">${sg(won-sp)}</b></div><div><small>ROI</small><b style="color:${SC(roi*100)}">${(roi>=0?"+":"−")+Math.abs(Math.round(roi*100))}%</b></div><div><small>Years</small><b>${yrsOf[s].size}</b></div><div><small>Titles</small><b>${titles?"🏆".repeat(titles):"—"}</b></div></div>`;
+    h2+=`<div class="note" style="padding-bottom:6px">Most bought: ${favs}<br>Best buy: ${best.map(l=>`${l.team} ’${l.y.slice(2)} (<b style="color:${SC(1)}">${sg(l.won-l.bid)}</b>)`).join(", ")}<br>Worst buy: ${worst.map(l=>`${l.team} ’${l.y.slice(2)} (<b style="color:${SC(l.won-l.bid)}">${sg(l.won-l.bid)}</b>)`).join(", ")}</div>`;
+    h2+=Object.keys(YEARS).sort().reverse().filter(y=>yrsOf[s].has(y)).map(y=>{const a=my.filter(l=>l.y===y),p=a.reduce((x,l)=>x+l.bid,0),w=a.reduce((x,l)=>x+l.won,0);
+      return`<div class="yrh"><b>${y}</b><span>${fm(p)} paid · ${fm(w)} won</span><b style="color:${SC(w-p)}">${sg(w-p)}</b></div>`+a.sort((x,z)=>z.won-x.won||z.bid-x.bid).map(l=>`<div class="yrr"><i></i><span>${l.team} <small>${l.conf} ${l.s}${l.shared?" · split":""}</small></span><small style="text-align:right">${l.champ?"🏆":l.w?l.w+" win"+(l.w>1?"s":""):"—"}</small><span>${fm(l.bid)}</span><span style="color:${SC(l.won-l.bid)}">${sg(l.won-l.bid)}</span></div>`).join("")}).join("")}
+  return card("Go-to teams",h,"tap for each year")+card("Bidder profile",h2)}
+function teamHTML(A){const L=A.look,T={};A.ys.forEach(S=>Object.values(S.T).forEach(t=>{const o=T[t.a]||(T[t.a]={a:t.a,n:TEAMS[t.a],ls:[],sp:0,won:0,titles:0});o.sp+=t.bid;o.won+=t.won;if(S.champ===t)o.titles++;
+    t.own.forEach(([n,p])=>o.ls.push({y:S.y,own:n,team:t.n,conf:t.conf,s:t.s,bid:p,won:t.won*(t.bid?p/t.bid:1),w:t.w,champ:S.champ===t}))}));
+  const rows=Object.values(T).sort((a,b)=>(Math.round(b.won)-Math.round(b.sp))-(Math.round(a.won)-Math.round(a.sp))||b.ls.length-a.ls.length);
+  return card("Teams",rows.map(o=>{const k="tm|"+o.a,op=sopen===k,yrs=new Set(o.ls.map(l=>l.y)).size;return`<div class="r tap" onclick="sop('${k}')"><span class="dt" style="background:var(--seg);color:var(--fg)">${yrs}×</span><div class="rm"><b>${o.n}${o.titles?" "+"🏆".repeat(o.titles):""}</b><small>${new Set(o.ls.map(l=>l.own)).size} owner${new Set(o.ls.map(l=>l.own)).size>1?"s":""} · ${fm(o.sp)} → ${fm(o.won)}</small></div><div class="rv" style="color:${SC(o.won-o.sp)}">${sg(o.won-o.sp)}</div></div>${op?yearRows(o.ls,L,true):""}`}).join(""),"sorted by net")}
+function statsHTML(){const A=allData(),T=[["rec","Records"],["seed","Seeds"],["bid","Bidders"],["team","Teams"]];
+  return`<div class="tabs">${T.map(([k,n])=>`<button class="tab${stab===k?" on":""}" onclick="stb('${k}')">${n}</button>`).join("")}</div>`+(stab==="rec"?recHTML(A):stab==="seed"?seedHTML(A):stab==="bid"?bidHTML(A):teamHTML(A))}
+
+/* ===== page ===== */
+function render(){const yk=Object.keys(YEARS).sort().reverse(),side=view==="alltime"||view==="stats",S=calc(YR);
+  $("evpick").className="evpick"+(side?" plain":"");
+  $("evpick").innerHTML=side?`<span>${view==="alltime"?"All-Time Standings":"Stats &amp; Records"}</span>`:`<span>${YR} NFL Playoffs</span><span class="car3">▾</span><select aria-label="Pick a year" onchange="setYear(this.value)">${yk.map(y=>`<option value="${y}"${y===YR?" selected":""}>${y} NFL Playoffs</option>`).join("")}</select>`;
+  $("nav").style.display=side?"none":"";
+  $("nav").innerHTML=[["bracket","Bracket"],["standings","Standings"],["auction","Auction"],["sched","Schedule"]].map(([k,n])=>`<button class="${view===k?"on":""}" onclick="go('${k}')">${n}</button>`).join("");
+  const names=["AFC","NFC","Super Bowl"];if(!names.includes(tab))tab="AFC";
+  $("tabs").style.display=view==="bracket"?"":"none";$("tabs").innerHTML=names.map(n=>`<button class="tab${tab===n?" on":""}" onclick="tb('${n}')">${n}</button>`).join("");
+  let h="";if(view==="alltime")h=allHTML();else if(view==="stats")h=statsHTML();else if(view==="standings")h=standHTML(S);else if(view==="auction")h=aucHTML(S);else if(view==="sched")h=schedHTML(S);
+  else{h=(sel?`<div class="sub">Showing ${S.L[sel].d}'s teams · <a href="#" onclick="sel=null;render();return false">show all</a></div>`:"")+bracketHTML(S)}
+  $("main").innerHTML=h;
+  $("st").textContent=side?"":S.done?`${YR} auction · final results · ${fm(S.pot)} pot`:LIVE&&LIVE.y===YR?`Live from ESPN · updated ${LIVE.t}`:`${YR} auction · ${fm(S.pot)} pot`;
+  if($("drawer").classList.contains("on"))drawDr()}
+const go=k=>{view=k;render();scrollTo(0,0)},tb=n=>{tab=n;render()},srt=k=>{asort=k;render()},swo=v=>{swho=v;render()},srd=r=>{srnd=r;render()},stb=k=>{stab=k;sopen=null;render()},sop=k=>{sopen=sopen===k?null:k;render()},sbd=v=>{sbid=v;render()};
+const pk=n=>{sel=n;view="bracket";render();scrollTo(0,0)};
+function setYear(y){YR=y;sel=null;srnd=null;swho="";if(view==="alltime"||view==="stats")view="bracket";history.replaceState(null,"","?year="+y);startLive();render();scrollTo(0,0)}
+/* ===== hamburger menu (same layout as the golf and March Madness sites) ===== */
+const IC=d=>`<span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg></span>`;
+function drawDr(){const side=view==="alltime"||view==="stats",yk=Object.keys(YEARS).sort().reverse();
+  $("drawerCard").innerHTML=`<div class="dr-head"><b>Oak Street <span>Auctions</span></b><button onclick="dr(0)" aria-label="Close menu">✕</button></div>
+  <button class="dr-link${!side?" on":""}" style="margin-top:8px" onclick="dr(0);go('bracket')">${IC('<ellipse cx="12" cy="12" rx="9.5" ry="5.5" transform="rotate(-35 12 12)"/><path d="M9 15l6-6M10.5 10.5l1 1M12.5 12.5l1 1"/>')}${YR} NFL Playoffs</button>
+  <button class="dr-link${view==="alltime"?" on":""}" onclick="dr(0);go('alltime')">${IC('<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM17 6h3v2a3 3 0 0 1-3 3M7 6H4v2a3 3 0 0 0 3 3"/>')}All-Time Standings</button>
+  <button class="dr-link${view==="stats"?" on":""}" onclick="dr(0);go('stats')">${IC('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>')}Stats &amp; Records</button>
+  <div class="dr-div"><span>Playoffs</span></div><div class="dr-grid">${yk.map(y=>`<button class="dr-cell${!side&&y===YR?" on":""}" onclick="dr(0);setYear('${y}')">${y}</button>`).join("")}</div>
+  <div class="dr-div" style="padding-top:20px"><span>Oak Street Auctions</span></div>
+  <a class="dr-link" href="/">${IC('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>')}All auctions</a>
+  <a class="dr-link" href="/majors/">${IC('<path d="M6 21V3l11 4-11 4"/><path d="M3 21h10"/>')}Golf Majors</a>
+  <a class="dr-link" href="/march-madness/">${IC('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.6 5.6c3.5 3.5 3.5 9.3 0 12.8M18.4 5.6c-3.5 3.5-3.5 9.3 0 12.8"/>')}March Madness</a>`}
+function dr(on){if(on)drawDr();$("drawer").classList.toggle("on",!!on);document.body.style.overflow=on?"hidden":""}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")dr(0)});
+
+/* ===== live results from ESPN for a year marked espn:true (or ?espn=1 on the latest year) ===== */
+const ESPN_NFL=(season,w)=>`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=3&week=${w}&dates=${season}`;
+async function loadLive(y){try{const out=[];for(const w of [1,2,3,5]){const j=await fetch(ESPN_NFL(+y-1,w),{cache:"no-store"}).then(r=>r.json());
+    (j.events||[]).forEach(e=>{const c=e.competitions[0],h=c.competitors.find(x=>x.homeAway==="home"),a=c.competitors.find(x=>x.homeAway==="away"),st=(c.status||e.status||{}).type||{};
+      out.push([w,e.date,((c.broadcasts||[])[0]||{}).names?.[0]||"",a.team.abbreviation,+a.score||0,h.team.abbreviation,+h.score||0,st.state==="post"?"post":st.state==="in"?"in":"pre",st.shortDetail||""])})}
+    LIVE={y,games:out,t:new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})};ALLC=null;if(YR===y)render();
+    if(out.length===13&&out.every(g=>g[7]==="post")&&LIVE_T){clearInterval(LIVE_T);LIVE_T=null}}catch(e){}}
+function startLive(){if(LIVE_T){clearInterval(LIVE_T);LIVE_T=null}const latest=Object.keys(YEARS).sort().pop();
+  if(YEARS[YR].espn||(YR===latest&&/[?&]espn=1/.test(location.search))){loadLive(YR);LIVE_T=setInterval(()=>loadLive(YR),60000)}}
+(function(){const q=(location.search.match(/[?&]year=(\d{4})/)||[])[1];YR=YEARS[q]?q:Object.keys(YEARS).sort().pop();startLive();render()})();
+</script>
+</body></html>
