@@ -20,21 +20,13 @@
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.45 var(--ui);-webkit-font-smoothing:antialiased}
 a{color:inherit}
-/* ===== hero ===== */
-.hero{position:relative;overflow:hidden;color:#fff;background:radial-gradient(120% 90% at 85% 0%,#14513a 0%,rgba(20,81,58,0) 60%),linear-gradient(160deg,#0b2a1e 0%,#0e3a29 55%,#082017 100%);padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 92px}
-.hero:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.035) 0 1px,transparent 1px 22px);pointer-events:none}
-.bar{position:relative;z-index:1;max-width:980px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.mark{display:flex;align-items:center;gap:10px;font:600 11px var(--ui);letter-spacing:.2em;text-transform:uppercase;text-decoration:none}
-.mark i{width:28px;height:28px;border:1px solid rgba(217,181,74,.7);border-radius:50%;display:grid;place-items:center;font:700 italic 13px var(--serif);letter-spacing:0;color:var(--gold);font-style:italic}
-.links{display:flex;gap:18px;font:500 12.5px var(--ui)}.links a{text-decoration:none;opacity:.78}.links a:hover{opacity:1}
-@media(max-width:560px){.links{display:none}}
-.hin{position:relative;z-index:1;max-width:980px;margin:0 auto;padding-top:54px}
-.kick{font:600 11px var(--ui);letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
-.hero h1{margin:14px 0 0;font:400 clamp(38px,9.5vw,68px)/1.02 var(--serif);letter-spacing:.01em}
-.hero h1 em{font-style:italic;color:#e9dcb0}
-.hero p.lede{max-width:520px;margin:18px 0 0;font:400 16.5px/1.55 var(--ui);color:rgba(255,255,255,.78)}
+/* ===== header: crest + name ===== */
+.top{background:#0b2a1e;color:#fff;text-align:center;padding:calc(env(safe-area-inset-top,0px) + 18px) 16px 16px;border-bottom:3px solid var(--gold)}
+.top .cr{width:46px;height:46px;margin:0 auto;border:1.5px solid var(--gold);border-radius:50%;display:grid;place-items:center;font:700 13px var(--serif);letter-spacing:.08em;color:var(--gold);text-decoration:none}
+.top h1{margin:8px 0 0;font:400 22px/1.2 var(--serif);letter-spacing:.06em}
+@media(min-width:700px){.top{padding-top:26px;padding-bottom:22px}.top .cr{width:54px;height:54px;font-size:15px}.top h1{font-size:28px}}
 /* ===== layout ===== */
-main{position:relative;z-index:2;max-width:980px;margin:-64px auto 0;padding:0 16px calc(40px + env(safe-area-inset-bottom,0px))}
+main{position:relative;z-index:2;max-width:980px;margin:16px auto 0;padding:0 16px calc(40px + env(safe-area-inset-bottom,0px))}
 .sec{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:44px 2px 14px}
 .sec h2{margin:0;font:400 26px/1.1 var(--serif)}
 .sec span{font:600 10.5px var(--ui);letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
@@ -105,13 +97,7 @@ footer b{font:400 italic 16px var(--serif);color:var(--fg)}footer nav{display:fl
 <script src="summary.js"></script>
 </head>
 <body>
-<section class="hero">
-  <div class="bar"><a class="mark" href="/"><i>O</i>Oak Street Auctions</a>
-    <nav class="links"><a href="#calendar">Calendar</a><a href="#auctions">Auctions</a><a href="#leaderboard">Leaderboard</a></nav></div>
-  <div class="hin"><div class="kick" id="kick">Calcuttas since 2021</div>
-    <h1>Oak Street <em>Auctions</em></h1>
-    <p class="lede">Golf majors, March Madness and the NFL playoffs. Every lot, every payout and every champion, tracked live and kept forever.</p></div>
-</section>
+<header class="top"><a class="cr" href="/" aria-label="Oak Street Auctions home">OSA</a><h1>Oak Street Auctions</h1></header>
 <main>
   <a class="card next" id="next" href="#calendar"></a>
   <div class="card nums" id="nums"></div>
@@ -138,7 +124,7 @@ const tag=n=>{const l=O.look[n];return l?`<span class="tag" style="background:${
 const svg=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 const dk=s=>new Date(s+"T12:00:00");
 function draw(sched){const S=O.sites,today=new Date();today.setHours(0,0,0,0);
-  const y0=Math.min(...Object.values(S).map(s=>s.y0));$("kick").textContent="Calcuttas since "+y0;
+  const y0=Math.min(...Object.values(S).map(s=>s.y0));if($("kick"))$("kick").textContent="Calcuttas since "+y0;
   const tot=Object.values(S).reduce((a,s)=>a+s.auctions,0),pots=Object.values(S).reduce((a,s)=>a+s.pots,0);
   $("nums").innerHTML=`<div><strong>${tot}</strong><small>Auctions</small></div><div><strong>${fm(pots)}</strong><small>In pots</small></div><div><strong>${O.board.length}</strong><small>Bidders</small></div><div><strong>${new Date().getFullYear()-y0+1}</strong><small>Seasons</small></div>`;
   $("aucs").innerHTML=["golf","mm","nfl"].map(k=>{const s=S[k],p=SP[k];const owners=(s.last.owner||"").split(" & ").filter(Boolean);
