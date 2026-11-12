@@ -115,15 +115,15 @@ footer b{font:400 italic 16px var(--serif);color:var(--fg)}footer nav{display:fl
 </main>
 <footer><b>Oak Street Auctions</b><nav><a href="/majors/">Golf</a><a href="/march-madness/">March Madness</a><a href="/nfl/">NFL Playoffs</a></nav></footer>
 <script>
-const O=window.OSA,$=id=>document.getElementById(id);
+const $=id=>document.getElementById(id);
 const fm=n=>"$"+Math.round(n).toLocaleString(),sg=n=>(n=Math.round(n),(n<0?"−":n>0?"+":"")+fm(Math.abs(n))),cl=n=>Math.round(n)>0?"pos":Math.round(n)<0?"neg":"";
 const SP={golf:{n:"Golf",c:"#006747",url:"/majors/",sub:"Majors & FedEx Cup Playoffs",what:"auctions",ic:'<path d="M6 21V3l11 4-11 4"/><path d="M3 21h10"/>'},
   mm:{n:"March Madness",c:"#009cde",url:"/march-madness/",sub:"NCAA Tournament",what:"auctions",ic:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.6 5.6c3.5 3.5 3.5 9.3 0 12.8M18.4 5.6c-3.5 3.5-3.5 9.3 0 12.8"/>'},
   nfl:{n:"NFL Playoffs",c:"#d50a0a",url:"/nfl/",sub:"Wild Card to the Super Bowl",what:"auctions",ic:'<ellipse cx="12" cy="12" rx="9.5" ry="5.5" transform="rotate(-35 12 12)"/><path d="M9 15l6-6M10.5 10.5l1 1M12.5 12.5l1 1"/>'}};
-const tag=n=>{const l=O.look[n];return l?`<span class="tag" style="background:${l[1]};color:${l[2]}">${l[0]}</span>`:""};
+const tag=n=>{const l=window.OSA.look[n];return l?`<span class="tag" style="background:${l[1]};color:${l[2]}">${l[0]}</span>`:""};
 const svg=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 const dk=s=>new Date(s+"T12:00:00");
-function draw(sched){const S=O.sites,today=new Date();today.setHours(0,0,0,0);
+function draw(sched){const O=window.OSA,S=O.sites,today=new Date();today.setHours(0,0,0,0);
   const y0=Math.min(...Object.values(S).map(s=>s.y0));if($("kick"))$("kick").textContent="Calcuttas since "+y0;
   const tot=Object.values(S).reduce((a,s)=>a+s.auctions,0),pots=Object.values(S).reduce((a,s)=>a+s.pots,0);
   $("nums").innerHTML=`<div><strong>${tot}</strong><small>Auctions</small></div><div><strong>${fm(pots)}</strong><small>In pots</small></div><div><strong>${O.board.length}</strong><small>Bidders</small></div><div><strong>${new Date().getFullYear()-y0+1}</strong><small>Seasons</small></div>`;
@@ -150,7 +150,40 @@ function draw(sched){const S=O.sites,today=new Date();today.setHours(0,0,0,0);
   const render=all=>{$("lb").innerHTML=`<table><thead><tr><th></th><th style="text-align:left">Bidder</th><th class="sp">Golf</th><th class="sp">MM</th><th class="sp">NFL</th><th>Net</th></tr></thead><tbody>${(all?B:B.slice(0,10)).map(row).join("")}</tbody></table>${B.length>10?`<button class="more" id="lbm">${all?"Show top 10":"Show all "+B.length+" bidders"}</button>`:""}`;
     const m=$("lbm");if(m)m.onclick=()=>render(!all)};
   render(false)}
-fetch("schedule.json",{cache:"no-store"}).then(r=>r.json()).then(draw).catch(()=>draw(null));
+
+/* ===== live totals: read each site directly (same website), so this page is never out of date.
+   Shows the saved snapshot (summary.js) or the last live read first, then refreshes in the background. ===== */
+const XJS={
+ golf:`(()=>{computeAll();const evs=ALL.events,B=bidders(evs);const lx=evs.reduce((m,x)=>!m||x.ord<m.ord?x:m,null);
+  return{auctions:evs.length,pots:Math.round(evs.reduce((t,x)=>t+x.pot,0)),y0:Math.min(...evs.map(x=>x.yr)),y1:Math.max(...evs.map(x=>x.yr)),bidders:B.length,
+  last:{ev:lx.e.name,champ:lx.champ?lx.champ.name:"",owner:lx.champOwner,pot:Math.round(lx.pot)},
+  rows:B.map(b=>({n:b.name,paid:Math.round(b.paid),won:Math.round(b.won),titles:b.titles})),look:Object.fromEntries(Object.values(ALL.look).map(o=>[o.name,[o.tag,o.color,o.text]]))}})()`,
+ mm:`(()=>{const A=allTime(),D=statsData();const ly=D.yrs[D.yrs.length-1];
+  return{auctions:A.yrs.length,pots:Math.round(A.yrs.reduce((t,y)=>t+y.tot,0)),y0:+A.yrs[0].y,y1:+ly.y,bidders:A.rows.length,
+  last:{ev:ly.y+" NCAA Tournament",champ:ly.champ,owner:ly.champOwn,pot:Math.round(ly.tot)},
+  rows:A.rows.map(r=>({n:r.n,paid:Math.round(r.sp),won:Math.round(r.won),titles:r.t?r.t.length:0})),look:Object.fromEntries(A.rows.map(r=>[r.n,[r.b.tag,r.b.c,r.b.fg]]))}})()`,
+ nfl:`(()=>{const A=allData(),ls=A.ys[A.ys.length-1];
+  return{auctions:A.ys.length,pots:A.ys.reduce((t,S)=>t+S.pot,0),y0:+A.ys[0].y,y1:+ls.y,bidders:A.names.length,
+  last:{ev:SBN(ls.y),champ:ls.champ.n,owner:ls.champ.own.map(o=>o[0]).join(" & "),pot:ls.pot},
+  rows:A.names.map(n=>{const my=A.lots.filter(l=>l.own===n);return{n,paid:Math.round(my.reduce((a,l)=>a+l.bid,0)),won:Math.round(my.reduce((a,l)=>a+l.won,0)),titles:A.ys.filter(S=>S.champ.own.some(o=>o[0]===n)).length}}),look:Object.fromEntries(A.names.map(n=>[n,[A.look[n].tag,A.look[n].c,A.look[n].fg]]))}})()`};
+const SRC={golf:"/majors/?embed=1",mm:"/march-madness/?embed=1",nfl:"/nfl/?embed=1"};
+function readSite(k){return new Promise(res=>{const f=document.createElement("iframe");f.style.cssText="position:absolute;width:1px;height:1px;left:-9999px;border:0;visibility:hidden";f.setAttribute("aria-hidden","true");f.tabIndex=-1;
+  let n=0,done=v=>{clearInterval(t);f.remove();res(v)};const t=setInterval(()=>{n++;try{const w=f.contentWindow;if(w&&w.document.readyState==="complete"){const v=w.eval(XJS[k]);if(v&&v.rows&&v.rows.length)return done({v,w:null,tagSet:null})}}catch(e){}if(n>60)done(null)},250);
+  f.src=SRC[k];document.body.appendChild(f)})}
+function build(d,tagger){const look={};["nfl","mm","golf"].forEach(k=>Object.assign(look,d[k].look));
+  if(tagger){const T=tagger(Object.keys(look));for(const n in look)if(T[n])look[n]=[T[n],look[n][1],look[n][2]]}
+  const comb={};["golf","mm","nfl"].forEach(k=>d[k].rows.forEach(r=>{const c=comb[r.n]||(comb[r.n]={n:r.n,paid:0,won:0,titles:0,by:{}});c.paid+=r.paid;c.won+=r.won;c.titles+=r.titles;c.by[k]=r.won-r.paid}));
+  const sites={};for(const k in d){const{rows,look:_,...rest}=d[k];sites[k]=rest}
+  return{sites,look,board:Object.values(comb).sort((a,b)=>(b.won-b.paid)-(a.won-a.paid))}}
+async function refreshLive(){const ks=["golf","mm","nfl"],got={};let tagger=null;
+  for(const k of ks){const r=await readSite(k);if(!r)return;got[k]=r.v}
+  // all-time tags come from the golf site's rule (both bidders sharing initials get three letters; Brandon Flath is DAD next to Flater)
+  try{const f=document.createElement("iframe");f.style.cssText="position:absolute;width:1px;height:1px;left:-9999px;border:0;visibility:hidden";f.src="/majors/?embed=1";document.body.appendChild(f);
+    await new Promise(r=>{let n=0;const t=setInterval(()=>{n++;try{if(f.contentWindow.tagSet){tagger=(ns)=>f.contentWindow.tagSet(ns,true);clearInterval(t);r()}}catch(e){}if(n>40){clearInterval(t);r()}},250)});
+    const L=build(got,tagger);f.remove();
+    window.OSA=L;try{localStorage.setItem("osa-summary",JSON.stringify({t:Date.now(),d:L}))}catch(e){}if(window.SCHED_DATA!==undefined)draw(window.SCHED_DATA)}catch(e){}}
+try{const c=JSON.parse(localStorage.getItem("osa-summary")||"null");if(c&&c.d&&c.d.board)window.OSA=c.d}catch(e){}
+fetch("schedule.json",{cache:"no-store"}).then(r=>r.json()).catch(()=>null).then(j=>{window.SCHED_DATA=j;draw(j);setTimeout(refreshLive,400)});
 </script>
 </body>
 </html>
