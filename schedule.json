@@ -1,0 +1,9 @@
+{"season":"2027","updated":"2026-11-12","auctions":[
+ {"sport":"nfl","name":"NFL Playoffs","date":"2027-01-15","detail":"Wild Card weekend Jan 16–18 · Super Bowl LXI Feb 14","site":"/nfl/"},
+ {"sport":"mm","name":"March Madness","date":"2027-03-15","detail":"Selection Sunday Mar 14 · First Four Mar 16–17 · Final Four in Detroit","site":"/march-madness/"},
+ {"sport":"golf","name":"The Masters","date":"2027-04-07","detail":"Augusta National · Apr 8–11","site":"/majors/"},
+ {"sport":"golf","name":"PGA Championship","date":"2027-05-19","detail":"PGA Frisco · May 20–23","site":"/majors/"},
+ {"sport":"golf","name":"U.S. Open","date":"2027-06-16","detail":"Pebble Beach · Jun 17–20","site":"/majors/"},
+ {"sport":"golf","name":"The Open Championship","date":"2027-07-14","detail":"St Andrews · Jul 15–18","site":"/majors/"},
+ {"sport":"golf","name":"FedEx Cup Playoffs","date":"2027-08-11","tbd":true,"detail":"St. Jude Aug 12–15 · BMW · TOUR Championship (if we hold one)","site":"/majors/"}
+]}
