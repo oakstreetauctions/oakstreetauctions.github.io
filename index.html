@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Oak Street Auctions</title>
+<meta name="description" content="Oak Street Auctions: golf, March Madness and NFL Playoffs Calcuttas.">
+<meta name="theme-color" content="#006747">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f4ec;--card:#ffffff;--fg:#1c2a21;--mut:#6d7468;--line:#e6e2d4;--row:#faf9f4;--green:#006747;--gold:#f2c94c;
+  --hdr:#006747;--hdrfg:#ffffff;--shadow:0 1px 2px rgba(28,42,33,.06),0 4px 14px rgba(28,42,33,.04);--serif:"Libre Caslon Text",Georgia,serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b120e;--card:#131c17;--fg:#eef1ea;--mut:#9aa396;--line:#253029;--row:#17211b;--green:#4fb98a;--hdr:#00422d;--shadow:none}}
+:root[data-theme="dark"]{--bg:#0b120e;--card:#131c17;--fg:#eef1ea;--mut:#9aa396;--line:#253029;--row:#17211b;--green:#4fb98a;--hdr:#00422d;--shadow:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:500 15px Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+header{background:var(--hdr);color:var(--hdrfg);text-align:center;padding:calc(env(safe-area-inset-top,0px) + 26px) 16px 22px}
+header h1{font:400 clamp(24px,7vw,34px) var(--serif);letter-spacing:.06em;margin:0}
+header .rule{width:44px;height:1px;background:var(--gold);margin:12px auto 10px}
+header p{margin:0;font:italic 400 14px var(--serif);opacity:.85}
+main{max-width:640px;margin:0 auto;padding:20px 16px calc(32px + env(safe-area-inset-bottom,0px))}
+.k{font:600 10.5px Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin:6px 2px 10px}
+.card{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow);color:inherit;text-decoration:none;transition:transform .12s,border-color .12s}
+a.card:hover{transform:translateY(-1px);border-color:var(--green)}
+.ic{width:56px;height:56px;border-radius:12px;display:grid;place-items:center;color:#fff}
+.ic svg{width:28px;height:28px}
+.t{font:400 20px var(--serif);line-height:1.2}
+.s{font:500 12.5px Inter,sans-serif;color:var(--mut);margin-top:3px}
+.go{font:600 13px Inter,sans-serif;color:var(--green);white-space:nowrap}
+.card.soon{opacity:.6}
+.card.soon .go{color:var(--mut)}
+footer{text-align:center;font:italic 400 13px var(--serif);color:var(--mut);margin-top:22px}
+</style>
+</head>
+<body>
+<header><h1>Oak Street Auctions</h1><div class="rule"></div><p>Calcuttas for the crew</p></header>
+<main>
+  <div class="k">Auctions</div>
+  <a class="card" href="/majors/">
+    <span class="ic" style="background:#006747"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V3l11 4-11 4"/><path d="M3 21h10"/></svg></span>
+    <span><div class="t">Golf</div><div class="s">Majors &amp; FedEx Cup Playoffs</div></span>
+    <span class="go">Open →</span></a>
+  <a class="card" href="/march-madness/">
+    <span class="ic" style="background:#E35205"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.6 5.6c3.5 3.5 3.5 9.3 0 12.8M18.4 5.6c-3.5 3.5-3.5 9.3 0 12.8"/></svg></span>
+    <span><div class="t">March Madness</div><div class="s">NCAA Tournament Calcutta</div></span>
+    <span class="go">Open →</span></a>
+  <div class="card soon">
+    <span class="ic" style="background:#013369"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="9.5" ry="6" transform="rotate(-35 12 12)"/><path d="M9.5 14.5l5-5M10.5 11l2.5 2.5M12 9.5l2.5 2.5"/></svg></span>
+    <span><div class="t">NFL Playoffs</div><div class="s">Coming soon</div></span>
+    <span class="go">Soon</span></div>
+  <footer>Oak Street Auctions</footer>
+</main>
+</body>
+</html>
