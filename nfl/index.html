@@ -126,6 +126,10 @@ table.atg td:last-child,table.atg th:last-child{padding-right:12px}
 .drill{background:var(--seg);padding:4px 0 6px;border-bottom:1px solid var(--line)}
 .foot{text-align:center;margin:14px 0 4px;font-size:11px}
 @media(min-width:700px){.col{flex-basis:210px}}
+
+/* chip initials: optically centered (Oswald sits its capitals ~.05em low; letter-spacing adds space after the last letter) */
+.dt{padding:calc(2px - .05em) 7px calc(2px + .05em)}
+.tg{padding:0 6px .04em;text-indent:.03em}.slot b{padding:0 0 .055em;text-indent:.03em}
 </style></head>
 <body>
 <header><button class="burger" id="burger" aria-label="Open menu" onclick="dr(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><h1 onclick="go('bracket')">Oak Street <span>Auctions</span></h1><div class="rule"></div><div class="evpick" id="evpick"></div></header>
