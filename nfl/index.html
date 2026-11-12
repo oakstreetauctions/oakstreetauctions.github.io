@@ -145,9 +145,13 @@ table.atg td:last-child,table.atg th:last-child{padding-right:12px}
 .feat .ft{display:flex;justify-content:space-between;margin-top:10px;font:12px var(--ui);color:var(--mut)}.feat .ft b{color:var(--acc);font-weight:600}
 .qlinks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 8px}.qlinks button{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;font:600 13px var(--ui);color:var(--fg);cursor:pointer}.qlinks svg{color:var(--red)}
 .more2{display:block;width:100%;border:0;border-top:1px solid var(--line);background:none;color:var(--acc);font:600 13px var(--ui);padding:11px;cursor:pointer}
+
+/* home button (top right): back to the Oak Street Auctions main page */
+.osh{position:absolute;z-index:3;right:10px;top:calc(env(safe-area-inset-top,0px) + 14px);width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:inherit;text-decoration:none;background:inherit}
+.osh:hover{background:rgba(255,255,255,.12)}.osh svg{width:22px;height:22px}
 </style></head>
 <body>
-<header><button class="burger" id="burger" aria-label="Open menu" onclick="dr(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><h1 onclick="go('home')">Oak Street <span>Auctions</span></h1><div class="rule"></div><div class="evpick" id="evpick"></div></header>
+<header><a class="osh" href="/" aria-label="Oak Street Auctions home" title="Oak Street Auctions home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a><button class="burger" id="burger" aria-label="Open menu" onclick="dr(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><h1 onclick="go('home')">Oak Street <span>Auctions</span></h1><div class="rule"></div><div class="evpick" id="evpick"></div></header>
 <nav id="nav"></nav>
 <div class="drawer" id="drawer"><div class="drawer-bg" onclick="dr(0)"></div><div class="drawer-card" id="drawerCard" role="dialog" aria-label="Menu"></div></div>
 <div class="wrap">
@@ -351,7 +355,7 @@ function drawDr(){const side=view==="alltime"||view==="stats"||view==="home",yk=
   <button class="dr-link${view==="stats"?" on":""}" onclick="dr(0);go('stats')">${IC('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>')}Stats &amp; Records</button>
   <div class="dr-div"><span>Playoffs</span></div><div class="dr-grid">${yk.map(y=>`<button class="dr-cell${!side&&y===YR?" on":""}" onclick="dr(0);setYear('${y}')">${y}</button>`).join("")}</div>
   <div class="dr-div" style="padding-top:20px"><span>Oak Street Auctions</span></div>
-  <a class="dr-link" href="/">${IC('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>')}All auctions</a>
+  <a class="dr-link" href="/">${IC('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>')}Oak Street home</a>
   <a class="dr-link" href="/majors/">${IC('<path d="M6 21V3l11 4-11 4"/><path d="M3 21h10"/>')}Golf Majors</a>
   <a class="dr-link" href="/march-madness/">${IC('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.6 5.6c3.5 3.5 3.5 9.3 0 12.8M18.4 5.6c-3.5 3.5-3.5 9.3 0 12.8"/>')}March Madness</a>`}
 function dr(on){if(on)drawDr();$("drawer").classList.toggle("on",!!on);document.body.style.overflow=on?"hidden":""}
