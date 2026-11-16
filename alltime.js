@@ -48,5 +48,6 @@
     sel(n){const s=st(CUR.key);s.sel=s.sel===n?"":n;CUR.rerender();if(s.sel)window.scrollTo({top:0,behavior:"smooth"})},
     yr(y){st(CUR.key).yr=y;CUR.rerender()},setTab(t){st(CUR.key).tab=t;CUR.rerender()},pick(n){st(CUR?CUR.key:"_").sel=n},
     preset(key,n){st(key).sel=n||""},
+    get(key){return Object.assign({},st(key))},set(key,o){Object.assign(st(key),{tab:o.tab||"st",sel:o.sel||"",yr:o.yr||"all"})},
     team(k,o){CUR.openTeam(k,o)},year(y){CUR.openYear(y)}};
 })();

@@ -414,6 +414,23 @@ function atCfg(){const A=allData(),L=A.look;return{key:"nfl",
   tag:n=>tagA(L,n),color:n=>L[n]?L[n].c:"#888",disp:n=>L[n]?L[n].d:n,
   unitS:"yr",unitA:"yrs",unitP:"playoffs",unitC:"Playoffs",yearLabel:y=>y+" NFL Playoffs · "+SBN(y),
   openTeam:(t,o)=>openT(t,o),openYear:y=>setYear(y),rerender:()=>render()}}
+
+/* ===== browser Back/Forward: each page, year, tab and picked bidder is its own history step ===== */
+let RESTORING=false,URL0=true;
+function urlFor(){const q=new URLSearchParams();
+  if(view==="home")return location.pathname;
+  if(view==="alltime"){q.set("page","alltime");if(window.OSAAT){const a=OSAAT.get("nfl");if(a.tab==="grid")q.set("tab","grid");if(a.sel)q.set("bidder",a.sel);if(a.yr!=="all")q.set("yr",a.yr)}}
+  else if(view==="stats"){q.set("page","stats");if(stab&&stab!=="rec")q.set("tab",stab)}
+  else{q.set("year",YR);if(view!=="bracket")q.set("view",view)}
+  return"?"+q.toString()}
+function syncURL(){if(RESTORING)return;const u=urlFor(),cur=location.search||location.pathname;if(u===cur||(u===location.pathname&&!location.search)){URL0=false;return}
+  try{URL0?history.replaceState(null,"",u):history.pushState(null,"",u)}catch(e){}URL0=false}
+function readURL(){const q=new URLSearchParams(location.search),pg=q.get("page"),y=q.get("year");
+  if(pg==="alltime"){view="alltime";if(window.OSAAT)OSAAT.set("nfl",{tab:q.get("tab"),sel:q.get("bidder"),yr:q.get("yr")})}
+  else if(pg==="stats"){view="stats";stab=q.get("tab")||"rec"}
+  else if(y&&YEARS[y]){view=q.get("view")||"bracket"}
+  else view="home";return y&&YEARS[y]?y:null}
+window.addEventListener("popstate",()=>{RESTORING=true;try{closeT();dr(0);const y=readURL();if(y&&y!==YR){YR=y;sel=null;srnd=null;swho="";startLive()}render();scrollTo(0,0)}finally{RESTORING=false}});
 /* ===== page ===== */
 function render(){const yk=Object.keys(YEARS).sort().reverse(),side=view==="alltime"||view==="stats"||view==="home",S=calc(YR);
   $("evpick").className="evpick"+(side&&view!=="home"?" plain":"");
@@ -424,12 +441,12 @@ function render(){const yk=Object.keys(YEARS).sort().reverse(),side=view==="allt
   $("tabs").style.display=view==="bracket"?"":"none";$("tabs").innerHTML=names.map(n=>`<button class="tab${tab===n?" on":""}" onclick="tb('${n}')">${n}</button>`).join("");
   let h="";if(view==="home")h=homeHTML();else if(view==="alltime")h=window.OSAAT?OSAAT.html(atCfg()):allHTML();else if(view==="stats")h=statsHTML();else if(view==="standings")h=standHTML(S);else if(view==="auction")h=aucHTML(S);else if(view==="sched")h=schedHTML(S);
   else{h=(sel?`<div class="sub">Showing ${S.L[sel].d}'s teams · <a href="#" onclick="sel=null;render();return false">show all</a></div>`:"")+bracketHTML(S)}
-  $("main").innerHTML=h;
+  $("main").innerHTML=h;syncURL();
   $("st").textContent=view==="home"?"":side?"":S.done?`${YR} auction · final results · ${fm(S.pot)} pot`:LIVE&&LIVE.y===YR?`Live from ESPN · updated ${LIVE.t}`:`${YR} auction · ${fm(S.pot)} pot`;
   if($("drawer").classList.contains("on"))drawDr()}
 const go=k=>{view=k;render();scrollTo(0,0)},tb=n=>{tab=n;render()},srt=k=>{asort=k;render()},swo=v=>{swho=v;render()},srd=r=>{srnd=r;render()},stb=k=>{stab=k;sopen=null;render()},sop=k=>{sopen=sopen===k?null:k;render()},sbd=v=>{sbid=v;render()};
 const pk=n=>{sel=n;view="bracket";render();scrollTo(0,0)};
-function setYear(y){YR=y;sel=null;srnd=null;swho="";if(view==="alltime"||view==="stats"||view==="home")view="bracket";try{history.replaceState(null,"","?year="+y)}catch(e){};startLive();render();scrollTo(0,0)}
+function setYear(y){YR=y;sel=null;srnd=null;swho="";if(view==="alltime"||view==="stats"||view==="home")view="bracket";startLive();render();scrollTo(0,0)}
 /* ===== hamburger menu (same layout as the golf and March Madness sites) ===== */
 const IC=d=>`<span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg></span>`;
 function drawDr(){const side=view==="alltime"||view==="stats"||view==="home",yk=Object.keys(YEARS).sort().reverse();
@@ -455,7 +472,7 @@ async function loadLive(y){try{const out=[];for(const w of [1,2,3,5]){const j=aw
     if(out.length===13&&out.every(g=>g[7]==="post")&&LIVE_T){clearInterval(LIVE_T);LIVE_T=null}}catch(e){}}
 function startLive(){if(LIVE_T){clearInterval(LIVE_T);LIVE_T=null}const latest=Object.keys(YEARS).sort().pop();
   if(YEARS[YR].espn||(YR===latest&&/[?&]espn=1/.test(location.search))){loadLive(YR);LIVE_T=setInterval(()=>loadLive(YR),60000)}}
-(function(){const q=(location.search.match(/[?&]year=(\d{4})/)||[])[1],now=new Date(),cy=String(now.getFullYear());YR=YEARS[q]?q:Object.keys(YEARS).sort().pop();if(q||(YEARS[cy]&&now>=new Date(cy+'-01-05')&&now<=new Date(cy+'-02-20')))view='bracket';startLive();render()})();
+(function(){const q=readURL(),now=new Date(),cy=String(now.getFullYear());YR=q||Object.keys(YEARS).sort().pop();if(!location.search&&(YEARS[cy]&&now>=new Date(cy+'-01-05')&&now<=new Date(cy+'-02-20')))view='bracket';startLive();render()})();
 </script>
 <script src="/share.js" defer></script>
 </body></html>
