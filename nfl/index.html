@@ -187,7 +187,13 @@ body{font-variant-ligatures:no-common-ligatures}
 .dsh .rw.h{cursor:default;font:600 10px var(--ui);letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}.dsh .rw.h:hover{background:none}
 .dsh .rw.dim{opacity:.4}.dsh .rw .t1{display:flex;align-items:center;gap:7px}.dsh .rw .t2{display:block;font:500 11px var(--ui);color:var(--mut);margin-top:2px}
 .dsh .nt{font:12px var(--ui);color:var(--mut);padding:10px 14px 0}
-</style></head>
+
+/* All-Time page theme */
+.atp{--at-a:var(--red);--at-th:var(--navy);--at-thf:#fff;--at-f:var(--body);--at-shf:600 17px var(--body)}
+.atp .atp-k{font:600 22px var(--body);text-transform:uppercase;letter-spacing:.04em}
+.atp .atp-chips button.on{background:var(--navy);border-color:var(--navy)}
+</style><link rel="stylesheet" href="/alltime.css">
+</head>
 <body>
 <header><a class="osh" href="/" aria-label="Oak Street Auctions home" title="Oak Street Auctions home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a><button class="burger" id="burger" aria-label="Open menu" onclick="dr(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><h1 onclick="go('home')">Oak Street <span>Auctions</span></h1><div class="rule"></div><div class="evpick" id="evpick"></div></header>
 <nav id="nav"></nav>
@@ -197,6 +203,7 @@ body{font-variant-ligatures:no-common-ligatures}
 <div id="main"></div>
 <div class="sub foot" id="st"></div>
 </div>
+<script src="/alltime.js"></script>
 <script>
 /* ===== NFL Playoff auction. Each year: payout % per win (Wild Card, Divisional, Conference, Super Bowl),
    the 14 teams with conference, seed and buyer(s) + price, and the playoff games (from ESPN).
@@ -346,7 +353,7 @@ function bidHTML(A){const L=A.look,names=A.names.slice().sort((a,b)=>L[a].d.loca
     h2+=Object.keys(YEARS).sort().reverse().filter(y=>yrsOf[s].has(y)).map(y=>{const a=my.filter(l=>l.y===y),p=a.reduce((x,l)=>x+l.bid,0),w=a.reduce((x,l)=>x+l.won,0);
       return`<div class="yrh"><b>${y}</b><span>${fm(p)} paid · ${fm(w)} won</span><b style="color:${SC(w-p)}">${sg(w-p)}</b></div>`+a.sort((x,z)=>z.won-x.won||z.bid-x.bid).map(l=>`<div class="yrr tap" onclick="openT('${l.a}','${s}')"><i></i><span>${l.team} <small>${l.conf} ${l.s}${l.shared?" · split":""}</small></span><small style="text-align:right">${l.champ?"🏆":l.w?l.w+" win"+(l.w>1?"s":""):"—"}</small><span>${fm(l.bid)}</span><span style="color:${SC(l.won-l.bid)}">${sg(l.won-l.bid)}</span></div>`).join("")}).join("")}
   // a picked bidder goes to the top, so tapping a name on All-Time lands right on their profile
-  return s?card("Bidder profile",h2)+card("Go-to teams",h,"tap for details"):card("Go-to teams",h,"tap for details")+card("Bidder profile",h2)}
+  return card("Go-to teams",h,"tap for details")+`<div class="note">Bidder profiles are on All-Time Standings: tap any name there.</div>`}
 function teamHTML(A){const L=A.look,T={};A.ys.forEach(S=>Object.values(S.T).forEach(t=>{const o=T[t.a]||(T[t.a]={a:t.a,n:TEAMS[t.a],ls:[],sp:0,won:0,titles:0});o.sp+=t.bid;o.won+=t.won;if(S.champ===t)o.titles++;
     t.own.forEach(([n,p])=>o.ls.push({y:S.y,own:n,team:t.n,conf:t.conf,s:t.s,bid:p,won:t.won*(t.bid?p/t.bid:1),w:t.w,champ:S.champ===t}))}));
   const rows=Object.values(T).sort((a,b)=>(Math.round(b.won)-Math.round(b.sp))-(Math.round(a.won)-Math.round(a.sp))||b.ls.length-a.ls.length);
@@ -399,16 +406,23 @@ function openT(a,sel){let d=document.getElementById("dsh");if(!d){d=document.cre
   d.querySelector(".cd").innerHTML=drillT(a,sel);d.querySelector(".cd").scrollTop=0;d.classList.add("on");document.body.style.overflow="hidden"}
 function closeT(){const d=document.getElementById("dsh");if(d)d.classList.remove("on");document.body.style.overflow=""}
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeT()});
-function goBid(n){view="stats";stab="bid";sbid=n;sopen=null;render();scrollTo(0,0)}
+function goBid(n){if(window.OSAAT)OSAAT.preset("nfl",n);view="alltime";render();scrollTo(0,0)}
+/* All-Time page: same layout as the golf site (shared /alltime.js) */
+function atCfg(){const A=allData(),L=A.look;return{key:"nfl",
+  years:A.ys.map(S=>({y:S.y,pot:S.pot,champ:S.champ.n,champOwn:S.champ.own.map(o=>o[0])})),
+  lots:A.lots.map(l=>({y:l.y,own:l.own,team:l.team,tkey:l.a,tname:TEAMS[l.a],bid:l.bid,won:l.won})),
+  tag:n=>tagA(L,n),color:n=>L[n]?L[n].c:"#888",disp:n=>L[n]?L[n].d:n,
+  unitS:"yr",unitA:"yrs",unitP:"playoffs",unitC:"Playoffs",yearLabel:y=>y+" NFL Playoffs · "+SBN(y),
+  openTeam:(t,o)=>openT(t,o),openYear:y=>setYear(y),rerender:()=>render()}}
 /* ===== page ===== */
 function render(){const yk=Object.keys(YEARS).sort().reverse(),side=view==="alltime"||view==="stats"||view==="home",S=calc(YR);
   $("evpick").className="evpick"+(side&&view!=="home"?" plain":"");
   $("evpick").innerHTML=view==="home"?`<span>Pick a year</span><span class="car3">▾</span><select aria-label="Pick a year" onchange="setYear(this.value)"><option value="" selected disabled>Pick a year</option>${yk.map(y=>`<option value="${y}">${y} NFL Playoffs</option>`).join("")}</select>`:side?`<span>${view==="alltime"?"All-Time Standings":"Stats &amp; Records"}</span>`:`<span>${YR} NFL Playoffs</span><span class="car3">▾</span><select aria-label="Pick a year" onchange="setYear(this.value)">${yk.map(y=>`<option value="${y}"${y===YR?" selected":""}>${y} NFL Playoffs</option>`).join("")}</select>`;
-  $("nav").style.display=side?"none":"";
-  $("nav").innerHTML=[["bracket","Bracket"],["standings","Standings"],["auction","Auction"],["sched","Schedule"]].map(([k,n])=>`<button class="${view===k?"on":""}" onclick="go('${k}')">${n}</button>`).join("");
+  $("nav").style.display=side&&view!=="alltime"?"none":"";
+  $("nav").innerHTML=view==="alltime"&&window.OSAAT?OSAAT.tabs({byLabel:"By Year"}).map(([k,n])=>`<button class="${OSAAT.tab()===k?"on":""}" onclick="OSAAT.setTab('${k}')">${n}</button>`).join(""):[["bracket","Bracket"],["standings","Standings"],["auction","Auction"],["sched","Schedule"]].map(([k,n])=>`<button class="${view===k?"on":""}" onclick="go('${k}')">${n}</button>`).join("");
   const names=["AFC","NFC","Super Bowl"];if(!names.includes(tab))tab="AFC";
   $("tabs").style.display=view==="bracket"?"":"none";$("tabs").innerHTML=names.map(n=>`<button class="tab${tab===n?" on":""}" onclick="tb('${n}')">${n}</button>`).join("");
-  let h="";if(view==="home")h=homeHTML();else if(view==="alltime")h=allHTML();else if(view==="stats")h=statsHTML();else if(view==="standings")h=standHTML(S);else if(view==="auction")h=aucHTML(S);else if(view==="sched")h=schedHTML(S);
+  let h="";if(view==="home")h=homeHTML();else if(view==="alltime")h=window.OSAAT?OSAAT.html(atCfg()):allHTML();else if(view==="stats")h=statsHTML();else if(view==="standings")h=standHTML(S);else if(view==="auction")h=aucHTML(S);else if(view==="sched")h=schedHTML(S);
   else{h=(sel?`<div class="sub">Showing ${S.L[sel].d}'s teams · <a href="#" onclick="sel=null;render();return false">show all</a></div>`:"")+bracketHTML(S)}
   $("main").innerHTML=h;
   $("st").textContent=view==="home"?"":side?"":S.done?`${YR} auction · final results · ${fm(S.pot)} pot`:LIVE&&LIVE.y===YR?`Live from ESPN · updated ${LIVE.t}`:`${YR} auction · ${fm(S.pot)} pot`;
