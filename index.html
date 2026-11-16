@@ -133,7 +133,7 @@ const dk=s=>new Date(s+"T12:00:00");
 function draw(sched){const O=window.OSA,S=O.sites,today=new Date();today.setHours(0,0,0,0);
   const y0=Math.min(...Object.values(S).map(s=>s.y0));if($("kick"))$("kick").textContent="Calcuttas since "+y0;
   const tot=Object.values(S).reduce((a,s)=>a+s.auctions,0),pots=Object.values(S).reduce((a,s)=>a+s.pots,0);
-  $("nums").innerHTML=`<div><strong>${tot}</strong><small>Auctions</small></div><div><strong>${fm(pots)}</strong><small>In pots</small></div><div><strong>${O.board.length}</strong><small>Bidders</small></div><div><strong>${new Date().getFullYear()-y0+1}</strong><small>Seasons</small></div>`;
+  $("nums").innerHTML=`<div><strong>${tot}</strong><small>Auctions</small></div><div><strong>${fm(pots)}</strong><small>In pots</small></div><div><strong>${O.board.length}</strong><small>Bidders</small></div><div><strong>${Math.max(...Object.values(S).map(s=>s.y1))-y0+1}</strong><small>Seasons</small></div>`;
   $("aucs").innerHTML=["golf","mm","nfl"].map(k=>{const s=S[k],p=SP[k];const owners=(s.last.owner||"").split(" & ").filter(Boolean);
     return`<a class="card auc ${k}" href="${p.url}"><div class="ah"><span class="ico">${svg(p.ic)}</span><div><h3>${p.n}</h3><p>${p.sub}</p></div></div>
     <div class="ab"><div class="st"><div><strong>${s.auctions}</strong><small>${p.what}</small></div><div><strong>${fm(s.pots)}</strong><small>in pots</small></div><div><strong>’${String(s.y0).slice(2)}–’${String(s.y1).slice(2)}</strong><small>seasons</small></div></div>
@@ -142,13 +142,13 @@ function draw(sched){const O=window.OSA,S=O.sites,today=new Date();today.setHour
   const ev=(sched&&sched.auctions||[]).map(a=>Object.assign({},a,{dt:dk(a.date)})).sort((a,b)=>a.dt-b.dt);
   $("season").textContent=sched?sched.season+" season":"";
   const nx=ev.find(a=>a.dt>=today);
-  $("tl").innerHTML=ev.map(a=>{const p=SP[a.sport],past=a.dt<today,isN=a===nx,isT=a.dt.getTime()===today.getTime();
+  $("tl").innerHTML=ev.map(a=>{const p=SP[a.sport],past=a.dt<today,isN=a===nx,isT=Math.floor((a.dt-today)/864e5)===0;
     return`<a class="ev${past?" past":""}" href="${a.site||p.url}" style="--c:${p.c}"><div class="d"><b>${a.dt.toLocaleDateString(undefined,{weekday:"short"})}</b><strong>${a.dt.getDate()}</strong><small>${a.dt.toLocaleDateString(undefined,{month:"short"})}</small></div><span class="dot"></span>
     <div class="n"><strong>${a.name}</strong><span>${a.tbd?"Tentative · ":""}${a.detail||""}</span></div>${isT?'<span class="pill lv">Tonight</span>':isN?'<span class="pill nx">Next up</span>':`<span class="pill">${p.n}</span>`}</a>`}).join("")||`<div style="padding:18px" class="note">The next season's calendar is coming soon.</div>`;
   // next up
-  if(nx){const p=SP[nx.sport],days=Math.round((nx.dt-today)/864e5);
+  if(nx){const p=SP[nx.sport],days=Math.floor((nx.dt-today)/864e5);
     $("next").style.setProperty("--c",p.c);$("next").href=nx.site||p.url;
-    $("next").innerHTML=`<div class="cal"><b>${nx.dt.toLocaleDateString(undefined,{month:"short"}).toUpperCase()}</b><strong>${nx.dt.getDate()}</strong><small>${nx.dt.toLocaleDateString(undefined,{weekday:"long"})}</small></div>
+    $("next").innerHTML=`<div class="cal"><b>${nx.dt.toLocaleDateString(undefined,{month:"short"}).toUpperCase()}</b><strong>${nx.dt.getDate()}</strong><small>${nx.dt.toLocaleDateString(undefined,{weekday:"short"})}</small></div>
     <div class="nx"><small>Next auction</small><h3>${nx.name}</h3><p>${nx.detail||""}</p></div><div class="cd"><strong>${days===0?"Tonight":days}</strong><small>${days===0?"":days===1?"day to go":"days to go"}</small></div>`}
   else $("next").style.display="none";
   // leaderboard
