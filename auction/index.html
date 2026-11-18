@@ -82,8 +82,8 @@ body{background:var(--bg);color:var(--fg);font:14px/1.4 var(--ui);-webkit-font-s
 .tv .pp{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border-radius:5px;padding:4px 9px;font:600 13px var(--ui);white-space:nowrap}
 .tv .pp em{font-style:normal;color:var(--tvmut);font-weight:500;font-size:12px}.tv .pp.m{background:rgba(242,201,76,.18);box-shadow:inset 0 0 0 1px rgba(242,201,76,.5)}
 .tv .sl{padding:12px 18px 12px 24px;min-height:0;display:flex;flex-direction:column}
-.tv .sl .cols{margin-top:8px;columns:3;column-gap:16px;column-fill:auto;flex:1;min-height:0;overflow:hidden}
-.tv .sl .cols.c4{columns:4;column-gap:14px;column-fill:balance}.tv .sl .r{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:7px;align-items:center;height:21px;border-bottom:1px solid var(--tvline);break-inside:avoid;font:500 13.5px var(--ui)}
+.tv .sl .cols{margin-top:8px;display:grid;grid-template-columns:repeat(var(--nc,3),minmax(0,1fr));gap:0 16px;align-items:start;flex:1;min-height:0}.tv .sl .cols .cc{min-width:0;display:flex;flex-direction:column}
+.tv .sl .cols.c4{gap:0 14px}.tv .sl .r{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:7px;align-items:center;height:21px;border-bottom:1px solid var(--tvline);break-inside:avoid;font:500 13.5px var(--ui)}
 .tv .sl .r b{text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
 .tv .sl .r span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tv .sl .r.nw{background:rgba(242,201,76,.22);border-radius:3px;box-shadow:0 0 0 2px rgba(242,201,76,.22)}
@@ -342,7 +342,8 @@ function drawTV(n,pot0){const tv=$("#tv");tv.dataset.ev=EK;
     const dd=up&&l[1].length>1?`<div class="dd${l[1].length>20?" three":l[1].length>8?" two":""}">${l[1].map(g=>{const w=A.champ&&A.champ[g];return w?`<span class="cw">${esc(g)} <em>${w.map(y=>"’"+String(y).slice(2)).join(" ")}</em></span>`:`<span>${esc(g)}</span>`}).join("")}</div>`:"";
     return`<div class="r${s?"":" open"}${up?" up":""}${j?" nw":""}${dd?" hasdd":""}"><i>${rk}</i><span>${esc(A.disp?A.disp[l[0]]||l[0]:nm(l[0]))}</span><b>${s?fm(s[2]):up&&+S.price?fm(+S.price):"—"}</b>${s?ownc(s[1]):up&&S.buyer?ownc(S.buyer):'<em class="tg0"></em>'}${dd}</div>`};
   const board=A.sections?`<div class="secs" style="--n:${A.sections.length}" data-rows="${Math.max(...A.sections.map(x=>x[1].length))}">${A.sections.map(([h,ns])=>`<div class="sc"><div class="sh">${esc(h)}</div>${ns.map(nn=>{const l=lot(nn);return row(l,0,l[2])}).join("")}</div>`).join("")}</div>`
-    :`<div class="cols${c4?" c4":A.lots.length>60?" dense":""}">${A.lots.map((l,i)=>row(l,i,/^(Group|Field)/.test(l[0])?"":l[2]||i+1)).join("")}</div>`;
+    :(()=>{const nc=c4?4:3,per=Math.ceil(A.lots.length/nc),cs=[];for(let c=0;c<nc;c++)cs.push(A.lots.slice(c*per,(c+1)*per).map((l,j)=>{const i=c*per+j;return row(l,i,/^(Group|Field)/.test(l[0])?"":l[2]||i+1)}).join(""));
+      return`<div class="cols${c4?" c4":A.lots.length>60?" dense":""}" style="--nc:${nc}">${cs.map(x=>`<div class="cc">${x}</div>`).join("")}</div>`})();
   const by={};BID.forEach(b=>by[b]={sp:0,n:0});S.sales.forEach(s=>{(by[s[1]]=by[s[1]]||{sp:0,n:0}).sp+=s[2];by[s[1]].n+=A.cnt&&A.cnt[s[0]]!=null?A.cnt[s[0]]:(lot(s[0])||[0,[1]])[1].length});
   const bl=Object.keys(by).sort((a,b)=>a.localeCompare(b)).map(b=>`<div class="r${by[b].sp?"":" z"}${fl&&last[1]===b?" nw":""}">${tag(b)}<span>${esc(b)}</span><i>${by[b].n} ${(A.unit||["golfer","golfers"])[by[b].n===1?0:1]}</i><b>${fm(by[b].sp)}</b></div>`).join("");
   const short=s=>s.replace("Low Round Rd","Low Rd ").replace("Worst Finish ","Worst ");
