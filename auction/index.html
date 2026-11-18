@@ -224,11 +224,17 @@ kbd{font:600 11px var(--ui);border:1px solid var(--line);border-bottom-width:2px
 .ctl .card.pad{padding:22px}.ctl h3{margin:0 0 6px;font:400 24px var(--serif);color:var(--green)}
 .ctl textarea{width:100%;height:340px;font:12.5px ui-monospace,Menlo,monospace;border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--card);color:var(--fg)}
 .steps{margin:8px 0 14px;padding-left:20px;line-height:1.7}.keys{margin-top:14px}
-.tvcol{display:grid;gap:14px;position:sticky;top:12px}.tvcol .card{margin:0}
+.tvcol{display:grid;gap:14px;position:sticky;top:12px;align-content:start;min-width:0}.tvcol .tvbox{width:100%;height:auto;aspect-ratio:16/9}.tvcol .card{margin:0}
 .tvcol .st{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
 .rec #recent .r{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 14px;border-top:1px solid var(--line);font-size:13.5px}
 .rec #recent .r span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rec #recent .r b{font-variant-numeric:tabular-nums}.rec #recent .none{padding:8px 14px 14px;color:var(--mut);font-size:13px}
 .full .ptabs,.full .tvcol>*:not(.tvbox){display:none!important}
+.fp .fph{display:flex;justify-content:space-between;padding:12px 14px 6px}
+.fp #fair{flex:1;min-height:0;overflow-y:auto}.fp{display:flex;flex-direction:column;flex:1;min-height:150px}
+@media(min-width:1001px){.tvcol{display:flex!important;flex-direction:column;max-height:calc(100vh - 24px);top:12px}.tvcol>*:not(.fp){flex:0 0 auto}.tvcol .tvbox{aspect-ratio:16/9;height:auto}}
+.fp #fair .r{display:grid;grid-template-columns:minmax(0,1fr) 52px 64px;gap:10px;padding:6px 14px;border-top:1px solid var(--line);font-size:13.5px;font-variant-numeric:tabular-nums}
+.fp #fair .r span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fp #fair .r i{font-style:normal;color:var(--mut);text-align:right}.fp #fair .r b{text-align:right;color:var(--green)}
+.fp #fair .r.up{background:#fff6cc}.fp #fair .none{padding:8px 14px 14px;color:var(--mut);font-size:13px}
 /* full-size TV: one-window full screen, or a second window opened at #tv */
 .full .top,.full .tabs,.full .ctl,.full .tvcol>.lbl,.full .tvcol>.note{display:none!important}
 .full .wrap{display:block;padding:0;max-width:none}
@@ -262,6 +268,7 @@ kbd{font:600 11px var(--ui);border:1px solid var(--line);border-bottom-width:2px
   <div class="tvbox" id="tvbox"><div class="tv" id="tv"></div></div>
   <div class="card st"><div><small>Pot</small><b id="cPot">$0</b></div><div><small>Projected pot</small><b id="cProj">—</b></div><div><small>Sold</small><b id="cSold">0</b></div></div>
   <div class="card rec"><div class="sec" style="padding:12px 14px 4px">Recent sales</div><div id="recent"></div></div>
+  <div class="card fp"><div class="fph"><span class="sec">Fair prices · still to sell</span><span class="sec" id="fpn"></span></div><div id="fair"></div></div>
 </section>
 </div>
 <script>
@@ -281,7 +288,7 @@ document.querySelectorAll("#ptabs button").forEach(b=>b.onclick=()=>{document.qu
 const ZOOM=CSS.supports&&CSS.supports("zoom","2");
 let TVSIZE=(()=>{try{return +localStorage.getItem("osa-tvsize")||94}catch(e){return 94}})();
 function fit(){const b=$("#tvbox"),w=b.clientWidth,h=b.clientHeight||w*9/16,full=document.documentElement.classList.contains("full"),s=Math.min(w/1280,h/720)*(full?TVSIZE/100:1),x=(w-1280*s)/2,y=(h-720*s)/2,tv=$("#tv");
-  if(ZOOM){tv.style.transform="none";tv.style.zoom=s;tv.style.left=x/s+"px";tv.style.top=y/s+"px"}else tv.style.transform=`translate(${x}px,${y}px) scale(${s})`}
+  if(ZOOM&&full){tv.style.transform="none";tv.style.zoom=s;tv.style.left=x/s+"px";tv.style.top=y/s+"px"}else{tv.style.zoom=1;tv.style.left="0px";tv.style.top="0px";tv.style.transform=`translate(${x}px,${y}px) scale(${s})`}}
 new ResizeObserver(fit).observe($("#tvbox"));
 
 /* private values (placeholder rule until we match Hayden's sheet) */
@@ -313,7 +320,11 @@ function render(){const n=cur(),L=n&&lot(n),pot=S.sales.reduce((a,s)=>a+s[2],0);
   $("#priv").innerHTML=n?privHTML(n):"";$("#priv").hidden=!n;
   if($("#hide"))$("#hide").onclick=()=>{SHOWV=!SHOWV;render()};const pp=projPot();$("#cProj").textContent=pp==null?"—":fm(pp);
   hint();
-  {const rc=$("#recent");if(rc)rc.innerHTML=S.sales.length?S.sales.slice(-8).reverse().map(s=>`<div class="r">${tag(s[1])}<span>${esc(A.disp?A.disp[s[0]]||s[0]:s[0])}</span><b>${fm(s[2])}</b></div>`).join(""):`<div class="none">Sales show up here as you go.</div>`}
+  {const fp=$("#fair");if(fp){const pp=projPot(),left=S.queue.filter(q=>lot(q));$("#fpn").textContent=left.length+" left";
+    if(!oddsOn())fp.innerHTML=`<div class="none">Load odds in the Odds tab to see fair prices.</div>`;
+    else if(!SHOWV)fp.innerHTML=`<div class="none">Hidden.</div>`;
+    else fp.innerHTML=left.map(q=>[q,share(q)]).sort((a,b)=>b[1]-a[1]).map(([q,sh])=>`<div class="r${q===n?" up":""}"><span>${esc(A.disp?A.disp[q]||q:q)}</span><i>${(sh*100).toFixed(1)}%</i><b>${pp==null?"—":fm(sh*pp)}</b></div>`).join("")}}
+  {const rc=$("#recent");if(rc)rc.innerHTML=S.sales.length?S.sales.slice(-3).reverse().map(s=>`<div class="r">${tag(s[1])}<span>${esc(A.disp?A.disp[s[0]]||s[0]:s[0])}</span><b>${fm(s[2])}</b></div>`).join(""):`<div class="none">Sales show up here as you go.</div>`}
   $("#bz").innerHTML=BID.map(b=>`<button class="${S.buyer===b?"on":""}" data-b="${esc(b)}">${tag(b)}<span>${esc(b)}</span></button>`).join("");
   $("#sold").disabled=!n||!(+S.price>0)||!S.buyer;$("#undo").disabled=!S.sales.length;$("#skip").disabled=S.queue.length<2;
   $("#resBtn").textContent=SHOWRES?"Back to the board":"Show results on TV";$("#resBtn").disabled=!S.queue.length||!oddsOn();$("#demo").textContent=timer?"❚❚ Stop":"▶ Practice: replay 2026 sales";
