@@ -298,6 +298,16 @@ const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&"
 const fm=n=>"$"+Math.round(n).toLocaleString();
 const tag=n=>{const t=A.look[n]||["?","#888","#fff"];return`<span class="tag" style="background:${t[1]};color:${t[2]}">${esc(t[0])}</span>`};
 const BK=()=>"osa-bidders:"+EK,BASE={};
+const MASTER=[["STONE. B", "#BDFD50", "#000"], ["MILLER. J", "#D7BFFA", "#000"], ["WYNDHAM. R", "#DD45DF", "#fff"], ["BOYD. D", "#926531", "#fff"], ["BOYD IV. B", "#CCD9F5", "#000"], ["HOUSE. C", "#BDFDC8", "#000"], ["WOODWARD. R", "#D7BFFA", "#000"], ["STONE. J", "#FEFACD", "#000"], ["BOHNERT. J", "#60B158", "#fff"], ["FLATH. B", "#F19E38", "#000"], ["WILLIAMS. K", "#60B158", "#fff"], ["CLAYTON. D", "#000070", "#fff"], ["BRADBURY. C", "#B2A7D2", "#000"], ["FLATH. H", "#4A62D1", "#fff"], ["FRENCH. C", "#D3354F", "#fff"], ["FOUGEROUSSE. D", "#70D1F0", "#000"], ["KAISER. K", "#FAE250", "#000"], ["BOYD II. B", "#8529AE", "#fff"], ["OLSON. T", "#F1C0D3", "#000"], ["BRADBURY. D", "#EC5E2B", "#000"], ["BOYD III. B", "#75140C", "#fff"], ["FIDLER. J", "#BDFD50", "#000"], ["WOODWARD. N", "#75140C", "#fff"], ["BOYD. B", "#5C9790", "#fff"], ["MYERS. J", "#EC5E2B", "#000"], ["POWELL. H", "#F1C0D3", "#000"], ["THOMPSON. J", "#BDFD50", "#000"], ["JERRELLS. L", "#5D0E07", "#fff"], ["FLATER. B", "#75FB4C", "#000"], ["FISH. JD", "#926531", "#fff"]],SPARE=["#1B3459", "#8C2A65", "#3A591B", "#12B886", "#F29085", "#8C8C07", "#499DF2", "#E0177F", "#2B2BD9", "#AD0CF2"];
+/* color math: pick the color farthest (OKLab) from every color already in this auction */
+const OKL=h=>{const n=parseInt(h.slice(1),16),f=c=>{c/=255;return c<=.04045?c/12.92:((c+.055)/1.055)**2.4},r=f(n>>16),g=f(n>>8&255),b=f(n&255);
+  const l=Math.cbrt(.4122214708*r+.5363922217*g+.0514459929*b),m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b),s=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
+  return[.2104542553*l+.793617785*m-.0040720468*s,1.9779984951*l-2.428592205*m+.4505937099*s,.0259040371*l+.7827717662*m-.808675766*s]};
+const DIST=(a,b)=>{const x=OKL(a),y=OKL(b);return Math.hypot(x[0]-y[0],x[1]-y[1],x[2]-y[2])};
+const HSL=(h,s,l)=>{s/=100;l/=100;const k=n=>(n+h/30)%12,a=s*Math.min(l,1-l),f=n=>l-a*Math.max(-1,Math.min(k(n)-3,9-k(n),1));return"#"+[f(0),f(8),f(4)].map(v=>Math.round(v*255).toString(16).padStart(2,"0")).join("")};
+const CANDS=(()=>{const c=[...SPARE];for(let h=0;h<360;h+=10)for(const [s,l] of [[85,45],[80,60],[70,75],[60,32]])c.push(HSL(h,s,l));return c})();
+function farthestColor(skip){const used=BID.filter(b=>b!==skip).map(b=>(A.look[b]||[])[1]).filter(Boolean);if(!used.length)return SPARE[0];
+  let best=null,bd=-1;for(const c of CANDS){const d=Math.min(...used.map(u=>DIST(c,u)));if(d>bd+1e-9){bd=d;best=c}}return best}
 function known(){const K={};Object.values(EV).forEach(e=>Object.entries(e.look||{}).forEach(([n,v])=>{if(!K[n])K[n]=v}));return K}
 function applyBidders(){if(!BASE[EK])BASE[EK]=Object.assign({},A.look);let o={add:{},rm:[]};try{o=Object.assign(o,JSON.parse(localStorage.getItem(BK())||"{}"))}catch(e){}
   const L=Object.assign({},BASE[EK],o.add);(o.rm||[]).forEach(n=>delete L[n]);A.look=L;BID=Object.keys(L).sort()}
@@ -483,13 +493,16 @@ $("#allSales").addEventListener("click",e=>{if(e.target.dataset.f!=="x")return;c
 $("#recent").addEventListener("click",e=>{const r=e.target.closest("[data-edit]");if(!r)return;EDITHL=r.dataset.edit;document.querySelector('#ptabs [data-p="res"]').click();salesUI()});
 /* ---- Bidders tab ---- */
 function nextTag(name){const [last,first]=name.split(".").map(x=>x.trim());const tags=new Set(BID.map(b=>(A.look[b]||[""])[0]));let t=((first||"")[0]||"")+((last||"")[0]||"");if(!tags.has(t))return t;t=((first||"")[0]||"")+(last||"").slice(0,2);return tags.has(t)?t.slice(0,2)+(BID.length%9+1):t}
-function freeColor(){const used=new Set(BID.map(b=>((A.look[b]||[])[1]||"").toLowerCase()));const P=["#1d4ed8","#b91c1c","#15803d","#7c3aed","#c2410c","#0e7490","#be185d","#4d7c0f","#a16207","#334155","#0f766e","#9333ea"];return P.find(c=>!used.has(c))||"#475569"}
+function freeColor(){return farthestColor()}
+function freeColorOld(){const used=new Set(BID.map(b=>((A.look[b]||[])[1]||"").toLowerCase()));const P=["#1d4ed8","#b91c1c","#15803d","#7c3aed","#c2410c","#0e7490","#be185d","#4d7c0f","#a16207","#334155","#0f766e","#9333ea"];return P.find(c=>!used.has(c))||"#475569"}
 function fgFor(h){const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))/255>.6?"#111":"#fff"}
 function bidUI(){const box=$("#bidList");if(!box)return;const cnt={};S.sales.forEach(s=>cnt[s[1]]=(cnt[s[1]]||0)+1);
   box.innerHTML=BID.map(b=>`<div class="r">${tag(b)}<span>${esc(b)}</span><small>${cnt[b]?cnt[b]+" bought":""}</small><button data-rm="${esc(b)}"${cnt[b]?" disabled":""}>Remove</button></div>`).join("")}
 $("#bidList").addEventListener("click",e=>{const n=e.target.dataset.rm;if(!n)return;const o=bidOver();delete o.add[n];if(BASE[EK]&&BASE[EK][n]&&!o.rm.includes(n))o.rm.push(n);saveBidders(o);applyBidders();render();toast(n+" removed.")});
-$("#nbName").addEventListener("input",()=>{const n=$("#nbName").value.toUpperCase().trim(),K=known();if(!n)return;const k=K[n]||null;$("#nbTag").value=k?k[0]:nextTag(n);$("#nbColor").value=k?k[1]:freeColor();
-  $("#nbMsg").innerHTML=k?"Known bidder: using their usual tag and color.":`New color <b>${$("#nbColor").value}</b> (use this hex in your sheet). Change it if you like.`});
+$("#nbName").addEventListener("input",()=>{const n=$("#nbName").value.toUpperCase().trim().replace(/\.\s?/,". ");if(!n)return;const m=MASTER.find(x=>x[0]===n),K=known()[n];$("#nbTag").value=K?K[0]:nextTag(n);
+  const used=BID.map(b=>(A.look[b]||[])[1]).filter(Boolean),clash=m&&used.some(u=>DIST(u,m[1])<.08);
+  $("#nbColor").value=(m&&!clash?m[1]:farthestColor()).toLowerCase();
+  $("#nbMsg").innerHTML=m&&!clash?"Regular bidder: using their usual color.":m?`Their usual color is taken tonight, so they get <b>${$("#nbColor").value.toUpperCase()}</b>, the color that stands out most from everyone here. Use this hex in your sheet.`:`New bidder: <b>${$("#nbColor").value.toUpperCase()}</b> is the color that stands out most from everyone here. Use this hex in your sheet.`});
 $("#nbColor").addEventListener("input",()=>{$("#nbMsg").innerHTML=`Color <b>${$("#nbColor").value}</b> (use this hex in your sheet).`});
 $("#nbAdd").onclick=()=>{let n=$("#nbName").value.toUpperCase().trim().replace(/\s+/g," ");if(!/^[A-Z' \-]+(\s(II|III|IV))?\.\s?[A-Z]$/.test(n)){$("#nbMsg").textContent="Use the LAST. F format, like SMITH. J";return}
   n=n.replace(/\.\s?/,". ");if(A.look[n]){$("#nbMsg").textContent=n+" is already in this auction.";return}const tg=($("#nbTag").value||nextTag(n)).toUpperCase().slice(0,3),c=$("#nbColor").value;
@@ -497,7 +510,7 @@ $("#nbAdd").onclick=()=>{let n=$("#nbName").value.toUpperCase().trim().replace(/
   const o=bidOver();o.rm=o.rm.filter(x=>x!==n);
   {const [la,fi]=n.split(".").map(x=>x.trim()),two=(fi[0]||"")+(la[0]||"");const h=BID.find(b=>(A.look[b]||[""])[0]===two);
    if(h&&tg.length===3){const [hl,hf]=h.split(".").map(x=>x.trim()),ht=(hf[0]||"")+hl.slice(0,2),hv=A.look[h];if(!BID.some(b=>b!==h&&(A.look[b]||[""])[0]===ht))o.add[h]=[ht,hv[1],hv[2]]}}
-  if(!(BASE[EK]&&BASE[EK][n]))o.add[n]=[tg,c,fgFor(c)];saveBidders(o);applyBidders();$("#nbName").value="";$("#nbTag").value="";$("#nbMsg").innerHTML=`Added ${tag(n)} ${esc(n)}.`;render()};
+  if(!(BASE[EK]&&BASE[EK][n])){const m=MASTER.find(x=>x[0]===n);o.add[n]=[tg,c,m&&m[1].toLowerCase()===c.toLowerCase()?m[2]:fgFor(c)]}saveBidders(o);applyBidders();$("#nbName").value="";$("#nbTag").value="";$("#nbMsg").innerHTML=`Added ${tag(n)} ${esc(n)}.`;render()};
 /* ---- backups ---- */
 function backupObj(){return{v:1,auction:EK,title:A.title,saved:new Date().toISOString(),sales:S.sales,queue:S.queue,odds:ODDS.__txt||"",bidders:bidOver(),tvsize:TVSIZE}}
 $("#bkSave").onclick=()=>{const b=new Blob([JSON.stringify(backupObj(),null,1)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=`oak-street-${EK}-backup-${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}.json`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);LASTBK=S.sales.length;toast("Backup saved to your Downloads.")};
