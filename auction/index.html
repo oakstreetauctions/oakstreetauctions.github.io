@@ -95,7 +95,8 @@ body{background:var(--bg);color:var(--fg);font:14px/1.4 var(--ui);-webkit-font-s
 .tv .pays .pc div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--tvline);padding:3px 0;white-space:nowrap}.tv .pays em{font-style:normal;color:var(--tvmut);font-weight:500;overflow:hidden;text-overflow:ellipsis}
 .tv .pays .pc div.f{color:var(--gold);font-size:15px}
 .tv .bl{margin-top:12px;display:flex;flex-direction:column;min-height:0}
-.tv .bl .r{display:grid;grid-template-columns:auto minmax(0,1fr) auto 64px;gap:9px;align-items:center;height:25px;border-bottom:1px solid var(--tvline);font:600 14px var(--ui);font-variant-numeric:tabular-nums}
+.tv .bl .r{display:grid;grid-template-columns:auto minmax(0,1fr) auto 64px;gap:9px;align-items:center;height:calc(25px*var(--k,1));border-bottom:1px solid var(--tvline);font:600 calc(14px*var(--k,1)) var(--ui);font-variant-numeric:tabular-nums}.tv .bl .r .tag{height:calc(20px*var(--k,1));min-width:calc(34px*var(--k,1));font-size:calc(11px*var(--k,1))}
+.tv .rt{overflow:hidden}
 .tv .bl .r span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tv .bl .r i{font-style:normal;color:var(--tvmut);font-weight:500;font-size:12.5px}.tv .bl .r b{text-align:right}
 .tv .bl .r.z{opacity:.5}.tv .bl .r.nw{background:rgba(242,201,76,.22)}
 .tv .tag{height:20px;min-width:34px;font-size:11px}.tv .bid .tag{height:26px;min-width:42px;font-size:14px}
@@ -205,6 +206,7 @@ kbd{font:600 11px var(--ui);border:1px solid var(--line);border-bottom-width:2px
 .tv .res .bs2 small{display:block;font:700 .66em var(--ui);letter-spacing:.1em;text-transform:uppercase;color:var(--tvmut);margin-bottom:1px}
 .tv .res .gl{display:grid;grid-template-columns:minmax(0,1fr) auto 4.4em 3.6em;gap:.6em;font:500 .95em/1.55 var(--ui)}
 .tv .res .gl span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tv .res .gl i{font-style:normal;color:var(--tvmut)}.tv .res .gl b{text-align:right;font-weight:700}.tv .res .gl em{text-align:right;font-style:normal;font-weight:600;opacity:.85}
+.tvsz{display:flex;align-items:center;gap:6px;margin-right:6px}.tvsz .btn{padding:8px 12px}.tvsz b{min-width:3em;text-align:center;font-variant-numeric:tabular-nums}
 /* full-size TV: one-window full screen, or a second window opened at #tv */
 .full .top,.full .tabs,.full .ctl,.full .tvcol>.lbl,.full .tvcol>.note{display:none!important}
 .full .wrap{display:block;padding:0;max-width:none}
@@ -242,9 +244,9 @@ kbd{font:600 11px var(--ui);border:1px solid var(--line);border-bottom-width:2px
 <section class="tvcol">
   <div class="lbl"><span>TV board</span><span>what everyone sees</span></div>
   <div class="tvbox" id="tvbox"><div class="tv" id="tv"></div></div>
-  <div class="tvbtns"><button class="btn" id="bigtv">⤢ Full-size TV view</button><button class="btn g" id="tvwin">Open TV board in a new window</button></div>
+  <div class="tvbtns"><span class="tvsz"><span class="sec">TV size</span><button class="btn g" id="tvm" aria-label="Smaller">−</button><b id="tvsv">94%</b><button class="btn g" id="tvp" aria-label="Bigger">+</button></span><button class="btn" id="bigtv">⤢ Full-size TV view</button><button class="btn g" id="tvwin">Open TV board in a new window</button></div>
   <p class="note" id="tvhint" style="margin-top:10px" hidden></p>
-  <p class="note" style="margin-top:12px">On your laptop this opens as its own window: drag it to the TV and go full screen. It updates the moment you type on the controls window. Shown scaled down here.</p>
+  <p class="note" style="margin-top:12px">On your laptop this opens as its own window: move it to the TV and go full screen. If your TV cuts off the edges, use <b>TV size</b> to shrink the board until everything shows. Shown scaled down here.</p>
 </section>
 </div>
 
@@ -263,7 +265,8 @@ let S=restore(),VAL=null,timer=0;
 const lot=n=>A.lots.find(l=>l[0]===n);
 document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x===b));$("#wrap").dataset.v=b.dataset.v;fit()});
 const ZOOM=CSS.supports&&CSS.supports("zoom","2");
-function fit(){const b=$("#tvbox"),w=b.clientWidth,h=b.clientHeight||w*9/16,s=Math.min(w/1280,h/720),x=(w-1280*s)/2,y=(h-720*s)/2,tv=$("#tv");
+let TVSIZE=(()=>{try{return +localStorage.getItem("osa-tvsize")||94}catch(e){return 94}})();
+function fit(){const b=$("#tvbox"),w=b.clientWidth,h=b.clientHeight||w*9/16,full=document.documentElement.classList.contains("full"),s=Math.min(w/1280,h/720)*(full?TVSIZE/100:1),x=(w-1280*s)/2,y=(h-720*s)/2,tv=$("#tv");
   if(ZOOM){tv.style.transform="none";tv.style.zoom=s;tv.style.left=x/s+"px";tv.style.top=y/s+"px"}else tv.style.transform=`translate(${x}px,${y}px) scale(${s})`}
 new ResizeObserver(fit).observe($("#tvbox"));
 
@@ -351,6 +354,7 @@ function drawTV(n,pot0){const tv=$("#tv");tv.dataset.ev=EK;
     :A.payCols?`<div class="pays win">${A.payCols.map(([h,list])=>`<div class="pc"><div class="ph2">${esc(h)}</div>${list.map(p=>`<div><em>${esc(p[0])}</em><span>${fm(pot*p[1]/100)}</span></div>`).join("")}</div>`).join("")}</div>`
     :`<div class="pays"><div class="pc">${A.pay.filter(p=>/^\d/.test(p[0])).map((p,i)=>`<div class="${i===0?"f":""}"><em>${esc(p[0])}</em><span>${fm(pot*p[1]/100)}</span></div>`).join("")}</div><div class="pc">${A.pay.filter(p=>!/^\d/.test(p[0])).map(p=>`<div><em>${esc(short(p[0]))}</em><span>${fm(pot*p[1]/100)}</span></div>`).join("")}</div></div>`}
     <div class="bl"><div class="k" style="margin-bottom:4px">Spent</div>${bl}<div class="r tot"><span></span><span>Total</span><i>${S.sales.length} sold</i><b>${fm(pot0)}</b></div></div></div>`;
+  const rt=tv.querySelector(".rt");if(rt){let k=1;rt.style.setProperty("--k",k);while(rt.scrollHeight>rt.clientHeight+1&&k>.6){k=Math.round((k-.04)*100)/100;rt.style.setProperty("--k",k)}if(rt.scrollHeight>rt.clientHeight+1){const p=rt.querySelector(".pays,.pcum");if(p)p.style.fontSize="12px"}}
   const d=tv.querySelector(".dd");if(d){const k=tv.getBoundingClientRect().width/1280||1,sl=tv.querySelector(".sl").getBoundingClientRect(),row=d.parentElement.getBoundingClientRect();if(row.bottom+(d.offsetHeight+6)*k>sl.bottom-4)d.classList.add("flip")}}
 function sell(name,owner,price){S.sales.push([name,owner,price]);S.queue=S.queue.filter(q=>q!==name);S.price="";S.buyer="";S.flash=1;JUST=name;clearTimeout(sell.t);sell.t=setTimeout(()=>{S.flash=0;render()},timer?240:2200);render()}
 const TAGOF=b=>(A.look[b]||[b])[0].toLowerCase(),NRM=s=>s.toLowerCase().replace(/[^a-z0-9 ]/g,"").replace(/\s+/g," ").trim();
@@ -389,10 +393,12 @@ function oddsUI(){const box=$("#oddsT");if(box&&document.activeElement!==box)box
 $("#oddsSave").onclick=()=>{const v=$("#oddsT").value;try{localStorage.setItem(OK(),v)}catch(e){}ODDS=parseOdds(v);ODDS.__txt=v;oddsUI();render();toast("Odds loaded.")};
 $("#oddsClear").onclick=()=>{try{localStorage.setItem(OK(),"")}catch(e){}ODDS={__txt:""};oddsUI();render()};
 $("#resBtn").onclick=()=>{SHOWRES=!SHOWRES;render()};
+function setSize(v){TVSIZE=Math.max(80,Math.min(100,v));try{localStorage.setItem("osa-tvsize",TVSIZE)}catch(e){}$("#tvsv").textContent=TVSIZE+"%";fit();send()}
+$("#tvm").onclick=()=>setSize(TVSIZE-2);$("#tvp").onclick=()=>setSize(TVSIZE+2);
 /* full size + two-window sync */
 const TVWIN=location.hash==="#tv";let CH=null;try{CH=new BroadcastChannel("osa-auction")}catch(e){}
-function send(){if(TVWIN||!CH)return;try{CH.postMessage({t:"s",ek:EK,s:{sales:S.sales,queue:S.queue.slice(0,1),price:S.price,buyer:S.buyer,flash:S.flash},j:JUST,pp:projPot(),res:(SHOWRES||!S.queue.length)&&!S.flash?results():null,sr:SHOWRES})}catch(e){}}
-if(CH)CH.onmessage=e=>{const m=e.data||{};if(TVWIN&&m.t==="s"){if(m.ek&&m.ek!==EK){EK=m.ek;A=EV[EK];BID=Object.keys(A.look).sort();CHAMPS=new Set(A.champs)}Object.assign(S,m.s);JUST=m.j;TVPP=m.pp;TVRES=m.res;SHOWRES=m.sr;SORT=m.o||SORT;render()}else if(!TVWIN&&m.t==="hi")send()};
+function send(){if(TVWIN||!CH)return;try{CH.postMessage({t:"s",ek:EK,s:{sales:S.sales,queue:S.queue.slice(0,1),price:S.price,buyer:S.buyer,flash:S.flash},j:JUST,pp:projPot(),res:(SHOWRES||!S.queue.length)&&!S.flash?results():null,sr:SHOWRES,sz:TVSIZE})}catch(e){}}
+if(CH)CH.onmessage=e=>{const m=e.data||{};if(TVWIN&&m.t==="s"){if(m.ek&&m.ek!==EK){EK=m.ek;A=EV[EK];BID=Object.keys(A.look).sort();CHAMPS=new Set(A.champs)}Object.assign(S,m.s);JUST=m.j;TVPP=m.pp;TVRES=m.res;SHOWRES=m.sr;if(m.sz&&m.sz!==TVSIZE){TVSIZE=m.sz;fit()}SORT=m.o||SORT;render()}else if(!TVWIN&&m.t==="hi")send()};
 function goFull(on){document.documentElement.classList.toggle("full",on);let x=$(".xit");
   if(on&&!x&&!TVWIN){x=document.createElement("button");x.className="xit";x.textContent="Exit full view";x.onclick=()=>goFull(false);document.body.appendChild(x)}
   if(!on&&x)x.remove();
@@ -405,7 +411,7 @@ $("#tvwin").onclick=()=>{let w=null;try{w=window.open(location.href.split("#")[0
   const h=$("#tvhint");h.hidden=false;h.innerHTML=w?"The TV board opened in its own window. Move it to the TV with <b>Window → Move to</b> your Apple TV, then make it full screen.":"Your browser blocked the new window here. Open this same page in a second browser window, add <b>#tv</b> to the end of the address, and it becomes the TV board. It follows this window as you enter sales."};
 window.addEventListener("resize",fit);
 if(TVWIN){S.queue=S.queue.slice(0,1);goFull(true);if(CH)CH.postMessage({t:"hi"})}
-loadOdds();oddsUI();render();fit();
+loadOdds();oddsUI();$("#tvsv").textContent=TVSIZE+"%";render();fit();
 </script>
 
 </body></html>
