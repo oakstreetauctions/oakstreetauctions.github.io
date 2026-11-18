@@ -310,9 +310,25 @@ const CANDS=(()=>{const c=[...SPARE];for(let h=0;h<360;h+=10)for(const [s,l] of 
 const MCOL=MASTER.map(m=>m[1]);
 function farthestColor(skip){const used=BID.filter(b=>b!==skip).map(b=>(A.look[b]||[])[1]).filter(Boolean);if(!used.length)return SPARE[0];
   let best=null,bd=-1;for(const c of CANDS.filter(c=>MCOL.every(m=>DIST(c,m)>=.09))){const d=Math.min(...used.map(u=>DIST(c,u)));if(d>bd+1e-9){bd=d;best=c}}return best}
+/* same tag rule as the golf site: 2 letters, 3 only when two bidders share initials, FLATH. B is DAD when FLATER. B is here */
+function tagSet(list){const ROMAN={II:"2",III:"3",IV:"4",V:"5",JR:"J",SR:"S"},nk=x=>String(x).toUpperCase().replace(/\s+/g," ").trim();
+  const parse=o=>{const m=o.match(/^([^.,]+)[.,]\s*(.+)$/);return m?{last:m[1].trim(),first:m[2].trim()}:{last:o,first:""}};
+  const info=o=>{const{last,first}=parse(o);const w=last.toUpperCase().split(/\s+/);const suf=w.length>1&&ROMAN[w[w.length-1].replace(/\W/g,"")]?ROMAN[w.pop().replace(/\W/g,"")]:"";
+    return{F:first.replace(/[^A-Za-z]/g,"").toUpperCase(),L:w.join("").replace(/[^A-Z]/g,""),suf}};
+  const rank=n=>{const i=MASTER.findIndex(b=>nk(b[0])===nk(n));return i<0?999:i};
+  const names=[...new Set(list)].sort((a,b)=>rank(a)-rank(b)||a.localeCompare(b)),keys=new Set(names.map(nk)),T={},used={},cnt={};
+  const dad=n=>nk(n)==="FLATH. B"&&keys.has("FLATER. B");
+  names.forEach(n=>{const x=info(n);if(x.suf||x.F.length>1||dad(n))return;const k=x.F[0]+x.L[0];cnt[k]=(cnt[k]||0)+1});
+  names.forEach(n=>{if(dad(n)){T[n]="DAD";used.DAD=1;return}const x=info(n);let t;
+    if(x.F.length>1)t=x.F+x.L[0];else if(x.suf)t=x.F[0]+x.L[0]+x.suf;
+    else if(cnt[x.F[0]+x.L[0]]>1){t=x.F[0]+x.L[0]+(x.L[1]||"");for(let j=2;used[t]&&j<x.L.length;j++)t=x.F[0]+x.L[0]+x.L[j]}
+    else t=x.F[0]+x.L[0];
+    if(used[t]&&!x.suf&&x.F.length===1&&x.L.length>1)t=x.F[0]+x.L[0]+x.L[1];
+    if(!t)t=n.slice(0,2).toUpperCase();let k=2;const b=t;while(used[t])t=b+(k++);used[t]=1;T[n]=t});
+  return T}
 function known(){const K={};Object.values(EV).forEach(e=>Object.entries(e.look||{}).forEach(([n,v])=>{if(!K[n])K[n]=v}));return K}
 function applyBidders(){if(!BASE[EK])BASE[EK]=Object.assign({},A.look);let o={add:{},rm:[]};try{o=Object.assign(o,JSON.parse(localStorage.getItem(BK())||"{}"))}catch(e){}
-  const L=Object.assign({},BASE[EK],o.add);(o.rm||[]).forEach(n=>delete L[n]);A.look=L;BID=Object.keys(L).sort()}
+  const L=Object.assign({},BASE[EK],o.add);(o.rm||[]).forEach(n=>delete L[n]);const T=tagSet(Object.keys(L));Object.keys(L).forEach(n=>{L[n]=[T[n]||L[n][0],L[n][1],L[n][2]]});A.look=L;BID=Object.keys(L).sort()}
 function saveBidders(o){try{localStorage.setItem(BK(),JSON.stringify(o))}catch(e){}}
 function bidOver(){try{return Object.assign({add:{},rm:[]},JSON.parse(localStorage.getItem(BK())||"{}"))}catch(e){return{add:{},rm:[]}}}
 let BID=Object.keys(A.look).sort();
@@ -504,7 +520,7 @@ function pickUI(){const sel=$("#nbPick");if(!sel||document.activeElement===sel)r
 function bidUI(){pickUI();const box=$("#bidList");if(!box)return;const cnt={};S.sales.forEach(s=>cnt[s[1]]=(cnt[s[1]]||0)+1);
   box.innerHTML=BID.map(b=>`<div class="r">${tag(b)}<span>${esc(b)}</span><small>${cnt[b]?cnt[b]+" bought":""}</small><button data-rm="${esc(b)}"${cnt[b]?" disabled":""}>Remove</button></div>`).join("")}
 $("#bidList").addEventListener("click",e=>{const n=e.target.dataset.rm;if(!n)return;const o=bidOver();delete o.add[n];if(BASE[EK]&&BASE[EK][n]&&!o.rm.includes(n))o.rm.push(n);saveBidders(o);applyBidders();render();toast(n+" removed.")});
-$("#nbName").addEventListener("input",()=>{const n=$("#nbName").value.toUpperCase().trim().replace(/\.\s?/,". ");if(!n)return;const m=MASTER.find(x=>x[0]===n),K=known()[n];$("#nbTag").value=K?K[0]:nextTag(n);
+$("#nbName").addEventListener("input",()=>{const n=$("#nbName").value.toUpperCase().trim().replace(/\.\s?/,". ");if(!n)return;const m=MASTER.find(x=>x[0]===n),K=known()[n];$("#nbTag").value=tagSet([...BID,n])[n]||nextTag(n);
   const rank=x=>{const i=MASTER.findIndex(z=>z[0]===x);return i<0?1e9:i},mi=rank(n);const clash=m&&BID.some(b=>rank(b)<mi&&DIST((A.look[b]||[])[1]||"#000000",m[1])<.08);
   $("#nbColor").value=(m&&!clash?m[1]:farthestColor()).toLowerCase();
   $("#nbMsg").innerHTML=m&&!clash?"Regular bidder: using their usual color.":m?`Their usual color belongs to a more senior bidder here tonight, so they get <b>${$("#nbColor").value.toUpperCase()}</b>, the color that stands out most from everyone here. Use this hex in your sheet.`:`New bidder: <b>${$("#nbColor").value.toUpperCase()}</b> is the color that stands out most from everyone here. Use this hex in your sheet.`});
@@ -512,7 +528,7 @@ $("#nbPick").addEventListener("change",e=>{if(!e.target.value)return;$("#nbName"
 $("#nbColor").addEventListener("input",()=>{$("#nbMsg").innerHTML=`Color <b>${$("#nbColor").value}</b> (use this hex in your sheet).`});
 $("#nbAdd").onclick=()=>{let n=$("#nbName").value.toUpperCase().trim().replace(/\s+/g," ");if(!/^[A-Z' \-]+(\s(II|III|IV))?\.\s?[A-Z]$/.test(n)){$("#nbMsg").textContent="Use the LAST. F format, like SMITH. J";return}
   n=n.replace(/\.\s?/,". ");if(A.look[n]){$("#nbMsg").textContent=n+" is already in this auction.";return}const tg=($("#nbTag").value||nextTag(n)).toUpperCase().slice(0,3),c=$("#nbColor").value;
-  if(BID.some(b=>(A.look[b]||[""])[0]===tg)){$("#nbMsg").textContent=`Tag ${tg} is taken. Pick another.`;return}
+  
   const o=bidOver();o.rm=o.rm.filter(x=>x!==n);
   {const [la,fi]=n.split(".").map(x=>x.trim()),two=(fi[0]||"")+(la[0]||"");const h=BID.find(b=>(A.look[b]||[""])[0]===two);
    if(h&&tg.length===3){const [hl,hf]=h.split(".").map(x=>x.trim()),ht=(hf[0]||"")+hl.slice(0,2),hv=A.look[h];if(!BID.some(b=>b!==h&&(A.look[b]||[""])[0]===ht))o.add[h]=[ht,hv[1],hv[2]]}}
