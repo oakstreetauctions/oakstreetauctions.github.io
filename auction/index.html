@@ -328,7 +328,11 @@ function tagSet(list){const ROMAN={II:"2",III:"3",IV:"4",V:"5",JR:"J",SR:"S"},nk
   return T}
 function known(){const K={};Object.values(EV).forEach(e=>Object.entries(e.look||{}).forEach(([n,v])=>{if(!K[n])K[n]=v}));return K}
 function applyBidders(){if(!BASE[EK])BASE[EK]=Object.assign({},A.look);let o={add:{},rm:[]};try{o=Object.assign(o,JSON.parse(localStorage.getItem(BK())||"{}"))}catch(e){}
-  const L=Object.assign({},BASE[EK],o.add);(o.rm||[]).forEach(n=>delete L[n]);const T=tagSet(Object.keys(L));Object.keys(L).forEach(n=>{L[n]=[T[n]||L[n][0],L[n][1],L[n][2]]});A.look=L;BID=Object.keys(L).sort()}
+  const L=Object.assign({},BASE[EK],o.add);(o.rm||[]).forEach(n=>delete L[n]);
+  {const rk=x=>{const i=MASTER.findIndex(z=>z[0]===x);return i<0?1e9:i};let fix=false;
+   for(const n of Object.keys(o.add)){const m=MASTER.find(z=>z[0]===n);if(!m||!L[n]||L[n][1].toLowerCase()===m[1].toLowerCase())continue;
+     if(!Object.keys(L).some(b=>b!==n&&rk(b)<rk(n)&&String(L[b][1]).toLowerCase()===m[1].toLowerCase())){if(BASE[EK]&&BASE[EK][n])delete o.add[n];else o.add[n]=[L[n][0],m[1],m[2]];L[n]=BASE[EK]&&BASE[EK][n]?BASE[EK][n]:[L[n][0],m[1],m[2]];fix=true}}
+   if(fix)saveBidders(o)}const T=tagSet(Object.keys(L));Object.keys(L).forEach(n=>{L[n]=[T[n]||L[n][0],L[n][1],L[n][2]]});A.look=L;BID=Object.keys(L).sort()}
 function saveBidders(o){try{localStorage.setItem(BK(),JSON.stringify(o))}catch(e){}}
 function bidOver(){try{return Object.assign({add:{},rm:[]},JSON.parse(localStorage.getItem(BK())||"{}"))}catch(e){return{add:{},rm:[]}}}
 let BID=Object.keys(A.look).sort();
@@ -521,7 +525,7 @@ function bidUI(){pickUI();const box=$("#bidList");if(!box)return;const cnt={};S.
   box.innerHTML=BID.map(b=>`<div class="r">${tag(b)}<span>${esc(b)}</span><small>${cnt[b]?cnt[b]+" bought":""}</small><button data-rm="${esc(b)}"${cnt[b]?" disabled":""}>Remove</button></div>`).join("")}
 $("#bidList").addEventListener("click",e=>{const n=e.target.dataset.rm;if(!n)return;const o=bidOver();delete o.add[n];if(BASE[EK]&&BASE[EK][n]&&!o.rm.includes(n))o.rm.push(n);saveBidders(o);applyBidders();render();toast(n+" removed.")});
 $("#nbName").addEventListener("input",()=>{const n=$("#nbName").value.toUpperCase().trim().replace(/\.\s?/,". ");if(!n)return;const m=MASTER.find(x=>x[0]===n),K=known()[n];$("#nbTag").value=tagSet([...BID,n])[n]||nextTag(n);
-  const rank=x=>{const i=MASTER.findIndex(z=>z[0]===x);return i<0?1e9:i},mi=rank(n);const clash=m&&BID.some(b=>rank(b)<mi&&DIST((A.look[b]||[])[1]||"#000000",m[1])<.08);
+  const rank=x=>{const i=MASTER.findIndex(z=>z[0]===x);return i<0?1e9:i},mi=rank(n);const clash=m&&BID.some(b=>rank(b)<mi&&String((A.look[b]||[])[1]||"").toLowerCase()===m[1].toLowerCase());
   $("#nbColor").value=(m&&!clash?m[1]:farthestColor()).toLowerCase();
   $("#nbMsg").innerHTML=m&&!clash?"Regular bidder: using their usual color.":m?`Their usual color belongs to a more senior bidder here tonight, so they get <b>${$("#nbColor").value.toUpperCase()}</b>, the color that stands out most from everyone here. Use this hex in your sheet.`:`New bidder: <b>${$("#nbColor").value.toUpperCase()}</b> is the color that stands out most from everyone here. Use this hex in your sheet.`});
 $("#nbPick").addEventListener("change",e=>{if(!e.target.value)return;$("#nbName").value=e.target.value;$("#nbName").dispatchEvent(new Event("input"));e.target.blur()});
@@ -534,7 +538,7 @@ $("#nbAdd").onclick=()=>{let n=$("#nbName").value.toUpperCase().trim().replace(/
    if(h&&tg.length===3){const [hl,hf]=h.split(".").map(x=>x.trim()),ht=(hf[0]||"")+hl.slice(0,2),hv=A.look[h];if(!BID.some(b=>b!==h&&(A.look[b]||[""])[0]===ht))o.add[h]=[ht,hv[1],hv[2]]}}
   if(!(BASE[EK]&&BASE[EK][n])){const m=MASTER.find(x=>x[0]===n);o.add[n]=[tg,c,m&&m[1].toLowerCase()===c.toLowerCase()?m[2]:fgFor(c)]}saveBidders(o);applyBidders();
   {const rank=x=>{const i=MASTER.findIndex(z=>z[0]===x);return i<0?1e9:i},mine=rank(n),moved=[];const o2=bidOver();
-   for(const b of BID){if(b===n)continue;const v=A.look[b];if(rank(b)>mine&&DIST(v[1],c)<.08){const nc=farthestColor(b);o2.add[b]=[v[0],nc,fgFor(nc)];A.look[b]=o2.add[b];moved.push(`${b} → <b>${nc.toUpperCase()}</b>`)}}
+   for(const b of BID){if(b===n)continue;const v=A.look[b];const reg=rank(b)<1e9;if(rank(b)>mine&&(reg?v[1].toLowerCase()===c.toLowerCase():DIST(v[1],c)<.08)){const nc=farthestColor(b);o2.add[b]=[v[0],nc,fgFor(nc)];A.look[b]=o2.add[b];moved.push(`${b} → <b>${nc.toUpperCase()}</b>`)}}
    if(moved.length){saveBidders(o2);applyBidders()}
    $("#nbName").value="";$("#nbTag").value="";$("#nbMsg").innerHTML=`Added ${tag(n)} ${esc(n)}.`+(moved.length?` Changed color so ${esc(n)} keeps theirs: ${moved.join(", ")} (update your sheet).`:"");}
   render()};
