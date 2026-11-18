@@ -297,18 +297,32 @@ const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 /* Hayden's value math: lot % ÷ sum of all lot % = share of pot (de-vig).
    Projected pot = dollars sold so far ÷ share sold so far. Value = share × projected pot. */
 let ODDS={},SHOWV=true;const OK=()=>EK+":odds";
-function parseOdds(t){const P={};String(t||"").split(/\n/).forEach(l=>{const m=l.trim().match(/^(.+?)[\s,\t]+(\d+(?:\.\d+)?)\s*%?\s*$/);if(m)P[m[1].trim().toLowerCase()]=+m[2]});return P}
-function loadOdds(){let s=null;try{s=localStorage.getItem(OK())}catch(e){}ODDS=parseOdds(s!=null?s:(A.sampleOdds||""));ODDS.__txt=s!=null?s:(A.sampleOdds||"")}
+function parseOdds(t){const P={};String(t||"").split(/\n/).forEach(l=>{const m=l.trim().match(/^(.+?)[\s,\t]+(\d+(?:\.\d+)?)\s*%?\s*$/);if(m)P[m[1].trim()]=+m[2]});return P}
+function loadOdds(){let s=null;try{s=localStorage.getItem(OK())}catch(e){}ODDS=parseOdds(s!=null?s:(A.sampleOdds||""));ODDS.__txt=s!=null?s:(A.sampleOdds||"");resolveOdds()}
 function oddsOn(){if(typeof TVWIN!=="undefined"&&TVWIN)return TVPP!=null;return Object.keys(ODDS).filter(k=>k!=="__txt").length>0}
-function share(n){const tot=Object.entries(ODDS).reduce((a,[k,v])=>k==="__txt"?a:a+v,0);const v=ODDS[String(n).toLowerCase()];return tot&&v?v/tot:0}
+/* forgiving name matching: punctuation, St./State/Saint, accents and common short names don't need to match exactly */
+const ALIAS={"uconn":"connecticut","unc":"n carolina","nc st":"n carolina st","ncst":"n carolina st","byu":"brigham young","smu":"southern methodist","tcu":"texas christian","ucf":"central florida","vcu":"virginia commonwealth","lsu":"louisiana st","usc":"southern california","ole miss":"mississippi","pitt":"pittsburgh","umbc":"maryland baltimore county","uab":"alabama birmingham","utep":"texas el paso","utsa":"texas san antonio","unlv":"nevada las vegas","fau":"florida atlantic","fiu":"florida international","liu":"long island","siue":"siu edwardsville","etsu":"e tennessee st","mtsu":"middle tennessee","miami fl":"miami","miami florida":"miami","miami ohio":"miami oh","st johns ny":"st johns","cal baptist":"ca baptist","california baptist":"ca baptist","nd st":"n dakota st"};
+const NRMN=s=>{let x=String(s).normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/ø/g,"o").replace(/&/g," and ").replace(/['’‘`]/g,"").replace(/[.\-–—/(),]/g," ");
+  x=x.split(/\s+/).filter(Boolean).map(w=>({saint:"st",state:"st",university:"",univ:"",the:"",of:"",north:"n",south:"s",east:"e",west:"w",northern:"n",southern:"s",eastern:"e",western:"w",mount:"mt",fort:"ft"})[w]??w).filter(Boolean).join(" ");
+  return ALIAS[x]&&ALIAS[x]!==x?NRMN(ALIAS[x]):x};
+const LEV=(a,b)=>{if(Math.abs(a.length-b.length)>2)return 9;const d=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=d[0];d[0]=i;for(let j=1;j<=b.length;j++){const t=d[j];d[j]=Math.min(d[j]+1,d[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return d[b.length]};
+let ODDSL={},ODDSX=[];
+function resolveOdds(){ODDSL={};ODDSX=[];const keys=A.lots.map(l=>[l[0],NRMN(l[0]),l[1].length>1&&l[1].length<=3?l[1].map(NRMN):[]]);
+  const rows=Object.entries(ODDS).filter(([r])=>r!=="__txt").map(([raw,v])=>({raw,v,k:NRMN(raw)})),later=[];
+  const put=(r,name)=>{if(ODDSL[name]!=null){ODDSX.push(r.raw);return}ODDSL[name]=r.v};
+  for(const r of rows){let hit=keys.filter(x=>x[1]===r.k);if(!hit.length)hit=keys.filter(x=>x[2].includes(r.k));if(hit.length===1)put(r,hit[0][0]);else if(hit.length>1)ODDSX.push(r.raw);else later.push(r)}
+  for(const r of later){const open=keys.filter(x=>ODDSL[x[0]]==null);let hit=open.filter(x=>r.k.length>=4&&(x[1].startsWith(r.k+" ")||r.k.startsWith(x[1]+" ")));
+    if(!hit.length&&r.k.length>=6){const c=open.map(x=>[x,LEV(r.k,x[1])]).filter(z=>z[1]<=2).sort((a,b)=>a[1]-b[1]);if(c.length&&(c.length===1||c[0][1]<c[1][1]))hit=[c[0][0]]}
+    if(hit.length===1)put(r,hit[0][0]);else ODDSX.push(r.raw)}}
+function share(n){const tot=Object.entries(ODDS).reduce((a,[k,v])=>k==="__txt"?a:a+v,0);const v=ODDSL[n];return tot&&v?v/tot:0}
 let TVRES=null,SHOWRES=false;
 function results(){if(TVWIN)return TVRES;if(!oddsOn()||!S.sales.length)return null;const pot=S.sales.reduce((a,s)=>a+s[2],0),done=!S.queue.length;
   const pp=done?pot:projPot();const L=S.sales.map(s=>{const v=share(s[0])*pp;return{n:s[0],o:s[1],p:s[2],v,d:v-s[2]}});
-  const B={};L.forEach(x=>{const b=B[x.o]||(B[x.o]={o:x.o,p:0,v:0,n:0,od:0});b.p+=x.p;b.v+=x.v;b.od+=ODDS[String(x.n).toLowerCase()]||0;b.sh=(b.sh||0)+share(x.n);b.n+=(A.cnt&&A.cnt[x.n]!=null?A.cnt[x.n]:(lot(x.n)||[0,[1]])[1].length)});
+  const B={};L.forEach(x=>{const b=B[x.o]||(B[x.o]={o:x.o,p:0,v:0,n:0,od:0});b.p+=x.p;b.v+=x.v;b.od+=ODDSL[x.n]||0;b.sh=(b.sh||0)+share(x.n);b.n+=(A.cnt&&A.cnt[x.n]!=null?A.cnt[x.n]:(lot(x.n)||[0,[1]])[1].length)});
   return{done,pot:pp,lots:L,bid:Object.values(B).map(b=>Object.assign(b,{d:b.v-b.p})).sort((a,b)=>b.d/pp-a.d/pp)}}
 let TVPP=null;function projPot(){if(TVWIN)return TVPP;if(!oddsOn())return null;const ss=S.sales.reduce((a,s)=>a+share(s[0]),0),sd=S.sales.reduce((a,s)=>a+s[2],0);return ss>0?sd/ss:null}
 function value(n){const p=projPot();return p==null?null:share(n)*p}
-function oddsMissing(){return A.lots.filter(l=>!ODDS[l[0].toLowerCase()]).map(l=>l[0])}
+function oddsMissing(){return A.lots.filter(l=>ODDSL[l[0]]==null).map(l=>l[0])}
 function privHTML(n){if(!oddsOn())return`<span>No odds loaded. Paste them in the <b>Odds</b> tab.</span>`;
   if(!SHOWV)return`<span>Values hidden</span><button id="hide" style="margin-left:auto">Show</button>`;
   const v=value(n),sh=share(n);return`<span>Fair price</span><b>${v==null?(sh*100).toFixed(1)+"%":fm(v)}</b><span>${v==null?"of the pot · first sale sets the price":(sh*100).toFixed(1)+"% of pot"}</span><button id="hide" style="margin-left:auto">Hide</button>`}
@@ -423,9 +437,9 @@ $("#demo").onclick=()=>{if(timer){clearInterval(timer);timer=0;render();return}
 $("#instant").onclick=()=>{clearInterval(timer);timer=0;while(S.queue.length){const n=S.queue[0],s=A.sales.find(x=>x[0]===n);if(!s){S.queue.shift();continue}S.sales.push([s[0],s[1],s[2]]);S.queue.shift()}S.flash=0;S.price="";S.buyer="";render();toast("All sales entered.")};
 $("#evsel").onchange=e=>{SHOWRES=false;clearInterval(timer);timer=0;EK=e.target.value;A=EV[EK];BID=Object.keys(A.look).sort();CHAMPS=new Set(A.champs);JUST="";clearCmd();loadOdds();oddsUI();S=restore();render();toast(A.title+" loaded.")};
 function oddsUI(){const box=$("#oddsT");if(box&&document.activeElement!==box)box.value=ODDS.__txt||"";const m=oddsMissing();
-  $("#oddsSt").textContent=oddsOn()?`· ${A.lots.length-m.length}/${A.lots.length}`:"· none";$("#oddsMsg").textContent=oddsOn()&&m.length?"No odds for: "+m.slice(0,6).join(", ")+(m.length>6?` +${m.length-6} more`:""):""}
-$("#oddsSave").onclick=()=>{const v=$("#oddsT").value;try{localStorage.setItem(OK(),v)}catch(e){}ODDS=parseOdds(v);ODDS.__txt=v;oddsUI();render();toast("Odds loaded.")};
-$("#oddsClear").onclick=()=>{try{localStorage.setItem(OK(),"")}catch(e){}ODDS={__txt:""};oddsUI();render()};
+  $("#oddsSt").textContent=oddsOn()?`· ${A.lots.length-m.length}/${A.lots.length}`:"· none";$("#oddsMsg").innerHTML=!oddsOn()?"":(m.length?`<b>No odds for:</b> ${esc(m.join(", "))}`:"Every lot has odds.")+(ODDSX.length?`<br><b>Couldn&rsquo;t place:</b> ${esc(ODDSX.join(", "))}. Rename these to match the board.`:"")}
+$("#oddsSave").onclick=()=>{const v=$("#oddsT").value;try{localStorage.setItem(OK(),v)}catch(e){}ODDS=parseOdds(v);ODDS.__txt=v;resolveOdds();oddsUI();render();toast("Odds loaded.")};
+$("#oddsClear").onclick=()=>{try{localStorage.setItem(OK(),"")}catch(e){}ODDS={__txt:""};resolveOdds();oddsUI();render()};
 $("#resBtn").onclick=()=>{SHOWRES=!SHOWRES;render()};
 function setSize(v){TVSIZE=Math.max(80,Math.min(100,v));try{localStorage.setItem("osa-tvsize",TVSIZE)}catch(e){}$("#tvsv").textContent=TVSIZE+"%";fit();send()}
 $("#tvm").onclick=()=>setSize(TVSIZE-2);$("#tvp").onclick=()=>setSize(TVSIZE+2);
