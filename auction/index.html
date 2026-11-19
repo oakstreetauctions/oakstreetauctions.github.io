@@ -410,7 +410,7 @@ function cur(){return S.queue[0]}
 function render(){const n=cur(),L=n&&lot(n),pot=S.sales.reduce((a,s)=>a+s[2],0);
   // controls
   $("#cPot").textContent=fm(pot);$("#cSold").textContent=S.sales.length;
-  $("#cLot").textContent=n||"Auction complete";$("#cMem").textContent=L?(L[1].length>1?L[1].join(", "):L[2]?"OWGR "+L[2]:""):"";
+  $("#cLot").textContent=n||"Auction complete";$("#cMem").textContent=L?(A.mem?(A.mem[n]||"")+(L[1].length>2?" · "+L[1].join(", "):""):L[1].length>1?L[1].join(", "):L[2]?"OWGR "+L[2]:""):"";
   $("#priv").innerHTML=n?privHTML(n):"";$("#priv").hidden=!n;
   if($("#hide"))$("#hide").onclick=()=>{SHOWV=!SHOWV;render()};const pp=projPot();$("#cProj").textContent=pp==null?"—":fm(pp);
   hint();salesUI();bidUI();
