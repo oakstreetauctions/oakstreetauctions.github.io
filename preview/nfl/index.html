@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>2027 NFL Playoffs Calcutta · Preview</title><meta name="robots" content="noindex"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--bg:#f3f4f6;--card:#ffffff;--fg:#1b2129;--mut:#646b73;--line:#e3e1d9;--seg:#efede6;--hdr:#15181c;--acc:#013369;--hl:#e8edf5;--serif:Oswald,Inter,sans-serif;--ui:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1114;--card:#161b20;--fg:#eceff2;--mut:#9aa3ab;--line:#262d34;--seg:#1c2228;--hl:#2a2614;color-scheme:dark}}
+html,body{margin:0}body{background:var(--bg);color:var(--fg);font:14px/1.45 var(--ui);-webkit-font-smoothing:antialiased}
+.top{background:var(--hdr);color:#fff;padding-block:22px 24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:880px;margin:0 auto}
+.top a.bk{color:#fff;opacity:.75;text-decoration:none;font-size:12.5px;font-weight:600}
+.top .eb{font:700 11px var(--ui);letter-spacing:.2em;text-transform:uppercase;opacity:.8;margin-top:12px}
+.top h1{margin:6px 0 4px;font:700 34px/1.1 var(--serif);text-wrap:balance}
+.top p{margin:0;opacity:.88}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.facts span{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:600}
+main{padding-block:10px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h2{font:700 23px var(--serif);margin:26px 0 10px}h2 small{font:500 13px var(--ui);color:var(--mut);margin-left:8px}
+.inv{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px}@media(max-width:660px){.inv{grid-template-columns:minmax(0,1fr)}}
+.box,.card{background:var(--card);border:1px solid var(--line);border-radius:8px}.box{padding:16px}
+.box h3{margin:0 0 8px;font:700 11px var(--ui);letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.box p{margin:0 0 10px;max-width:60ch}.when{font:700 21px/1.3 var(--serif)}
+.cta{background:var(--hl);border-radius:6px;padding:10px 12px;font-weight:600}
+.pay{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}.pay.one{grid-template-columns:minmax(0,1fr)}
+.pay div{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.pay b{font-variant-numeric:tabular-nums;white-space:nowrap}.pay .sum{border-bottom:0;font-weight:700}
+.pnote{color:var(--mut);font-size:12.5px;margin-top:8px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:7px 13px;font:600 13px var(--ui);cursor:pointer}
+.chip.on{background:var(--hdr);border-color:var(--hdr);color:#fff}
+#q{flex:1;min-width:160px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:8px 10px;font:14px var(--ui)}
+.chip:focus-visible,#q:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.card{overflow:hidden}
+.hd,.g{display:grid;grid-template-columns:30px minmax(0,1fr) 74px 50px;gap:10px;align-items:center;padding:9px 14px}
+.hd{font:700 10.5px var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);background:var(--seg)}
+.hd span:nth-child(n+3),.g>span:nth-child(n+3){text-align:right}
+ul{list-style:none;margin:0;padding:0}.g{border-top:1px solid var(--line)}
+.rk{color:var(--mut);font-variant-numeric:tabular-nums;text-align:right;font-size:12.5px}
+.nm{min-width:0;display:flex;flex-direction:column}.nm b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch{font-style:normal;font-size:11.5px;font-weight:700;color:var(--acc)}.g[data-champ="1"]{background:var(--hl)}
+.bf{display:flex;flex-direction:column;line-height:1.2}.bf b{font-variant-numeric:tabular-nums}.bf b.won{color:var(--acc)}.bf i{font-style:normal;font-size:11px;color:var(--mut)}
+.st{color:var(--mut);font-variant-numeric:tabular-nums}
+.empty{padding:16px 14px;color:var(--mut);border-top:1px solid var(--line)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.grp header{padding:12px 14px 8px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.grp h3{margin:0;font:700 18px var(--serif)}.grp header span{color:var(--mut);font-size:12px}
+.grp ul{padding:8px 14px 12px;display:grid;gap:4px}.grp.wide ul{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));column-gap:16px}
+li.cw{color:var(--acc);font-weight:700}li.cw em{font-style:normal;font-size:12px}
+.tm{display:grid;grid-template-columns:38px minmax(0,1fr);gap:8px;align-items:baseline;padding:6px 0;border-top:1px solid var(--line)}.tm:first-child{border-top:0}
+.tm i{font-style:normal;color:var(--mut);text-align:right;font-variant-numeric:tabular-nums;font-size:12.5px}
+.tm b{font-weight:600}.tm small{display:block;color:var(--mut);font-size:12px}
+.note{margin-top:28px;color:var(--mut);font-size:12.5px;max-width:62ch}
+@media(max-width:520px){.hd,.g{grid-template-columns:22px minmax(0,1fr) 54px 40px;gap:8px;padding:9px 10px}.top h1{font-size:28px}}
+</style></head><body>
+<div class="top"><div class="wrap">
+<a class="bk" href="/">← Oak Street Auctions</a>
+<div class="eb">Auction preview</div>
+<h1>2027 NFL Playoffs Calcutta</h1>
+<p>Auction night Friday, January 15 at 6:30 PM · Wild Card weekend Jan 16–18 · Super Bowl LXI Feb 14</p>
+<div class="facts"><span>14 teams</span><span>Every team sold one at a time</span><span>Paid by the win</span></div>
+</div></div>
+<main><div class="wrap">
+<h2>You’re invited</h2>
+<div class="inv">
+<div class="box"><h3>When</h3><p class="when">Friday, January 15<br>6:30 PM</p>
+<h3>How it’s sold</h3><p>All 14 playoff teams are auctioned one at a time.</p><p>Each win pays the owner, so a deep run adds up. The payouts add up to 100% of the pot.</p>
+<div class="cta">Questions, or planning to bid? Let Hayden know.</div></div>
+<div class="box"><h3>Payouts, share of the pot</h3><div class="pay one"><div><span>Wild Card win</span><b>6%</b></div><div><span>Divisional win</span><b>8%</b></div><div><span>Conference win</span><b>10%</b></div><div><span>Super Bowl win</span><b>12%</b></div><div class="sum"><span>Champion total, 1 seed (bye)</span><b>30%</b></div><div class="sum"><span>Champion total, Seeds 2–7</span><b>36%</b></div></div><p class="pnote">Each playoff win pays its round’s share. A 1 seed skips Wild Card weekend.</p></div>
+</div>
+<h2>The teams <small>by seed</small></h2><div class="grid"><article class="card grp"><header><h3>AFC</h3><span>7 teams</span></header><div style="padding:6px 14px 10px"><div class="tm"><i>1</i><span><b>Denver Broncos</b><small>First-round bye</small></span></div><div class="tm"><i>2</i><span><b>New England Patriots</b><small></small></span></div><div class="tm"><i>3</i><span><b>Jacksonville Jaguars</b><small></small></span></div><div class="tm"><i>4</i><span><b>Pittsburgh Steelers</b><small></small></span></div><div class="tm"><i>5</i><span><b>Houston Texans</b><small></small></span></div><div class="tm"><i>6</i><span><b>Buffalo Bills</b><small></small></span></div><div class="tm"><i>7</i><span><b>Los Angeles Chargers</b><small></small></span></div></div></article><article class="card grp"><header><h3>NFC</h3><span>7 teams</span></header><div style="padding:6px 14px 10px"><div class="tm"><i>1</i><span><b>Seattle Seahawks</b><small>First-round bye</small></span></div><div class="tm"><i>2</i><span><b>Chicago Bears</b><small></small></span></div><div class="tm"><i>3</i><span><b>Philadelphia Eagles</b><small></small></span></div><div class="tm"><i>4</i><span><b>Carolina Panthers</b><small></small></span></div><div class="tm"><i>5</i><span><b>Los Angeles Rams</b><small></small></span></div><div class="tm"><i>6</i><span><b>San Francisco 49ers</b><small></small></span></div><div class="tm"><i>7</i><span><b>Green Bay Packers</b><small></small></span></div></div></article></div><p class="note">Odds stay off this page.</p>
+</div></main>
+</body></html>

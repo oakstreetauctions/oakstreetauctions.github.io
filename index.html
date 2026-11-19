@@ -143,11 +143,11 @@ function draw(sched){const O=window.OSA,S=O.sites,today=new Date();today.setHour
   $("season").textContent=sched?sched.season+" season":"";
   const nx=ev.find(a=>a.dt>=today);
   $("tl").innerHTML=ev.map(a=>{const p=SP[a.sport],past=a.dt<today,isN=a===nx,isT=Math.floor((a.dt-today)/864e5)===0;
-    return`<a class="ev${past?" past":""}" href="${a.site||p.url}" style="--c:${p.c}"><div class="d"><b>${a.dt.toLocaleDateString(undefined,{weekday:"short"})}</b><strong>${a.dt.getDate()}</strong><small>${a.dt.toLocaleDateString(undefined,{month:"short"})}</small></div><span class="dot"></span>
+    return`<a class="ev${past?" past":""}" href="${(!past&&a.preview)||a.site||p.url}" style="--c:${p.c}"><div class="d"><b>${a.dt.toLocaleDateString(undefined,{weekday:"short"})}</b><strong>${a.dt.getDate()}</strong><small>${a.dt.toLocaleDateString(undefined,{month:"short"})}</small></div><span class="dot"></span>
     <div class="n"><strong>${a.name}</strong><span>${a.tbd?"Tentative · ":""}${a.detail||""}</span></div>${isT?'<span class="pill lv">Tonight</span>':isN?'<span class="pill nx">Next up</span>':`<span class="pill">${p.n}</span>`}</a>`}).join("")||`<div style="padding:18px" class="note">The next season's calendar is coming soon.</div>`;
   // next up
   if(nx){const p=SP[nx.sport],days=Math.floor((nx.dt-today)/864e5);
-    $("next").style.setProperty("--c",p.c);$("next").href=nx.site||p.url;
+    $("next").style.setProperty("--c",p.c);$("next").href=nx.preview||nx.site||p.url;
     $("next").innerHTML=`<div class="cal"><b>${nx.dt.toLocaleDateString(undefined,{month:"short"}).toUpperCase()}</b><strong>${nx.dt.getDate()}</strong><small>${nx.dt.toLocaleDateString(undefined,{weekday:"short"})}</small></div>
     <div class="nx"><small>Next auction</small><h3>${nx.name}</h3><p>${nx.detail||""}</p></div><div class="cd"><strong>${days===0?"Tonight":days}</strong><small>${days===0?"":days===1?"day to go":"days to go"}</small></div>`}
   else $("next").style.display="none";
