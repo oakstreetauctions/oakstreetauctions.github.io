@@ -422,9 +422,7 @@ function results(){if(TVWIN)return TVRES;if(!oddsOn()||!S.sales.length)return nu
   const pp=done?pot:projPot();const L=S.sales.map(s=>{const v=share(s[0])*pp;return{n:s[0],o:s[1],p:s[2],v,d:v-s[2]}});
   const B={};L.forEach(x=>{const b=B[x.o]||(B[x.o]={o:x.o,p:0,v:0,n:0,od:0});b.p+=x.p;b.v+=x.v;b.od+=ODDSL[x.n]||0;b.sh=(b.sh||0)+share(x.n);b.n+=(A.cnt&&A.cnt[x.n]!=null?A.cnt[x.n]:(lot(x.n)||[0,[1]])[1].length)});
   return{done,pot:pp,lots:L,bid:Object.values(B).map(b=>Object.assign(b,{d:b.v-b.p})).sort((a,b)=>b.d/pp-a.d/pp)}}
-let TVPP=null;/* live=true also counts the bid on the floor as if it sold, so the projected pot moves with the bidding */
-function projPot(live){if(TVWIN)return TVPP;if(!oddsOn())return null;let ss=S.sales.reduce((a,s)=>a+share(s[0]),0),sd=S.sales.reduce((a,s)=>a+s[2],0);
-  const n=S.queue[0],bid=+S.price;if(live&&!S.flash&&n&&bid>0&&share(n)>0){ss+=share(n);sd+=bid}return ss>0?sd/ss:null}
+let TVPP=null;function projPot(){if(TVWIN)return TVPP;if(!oddsOn())return null;const ss=S.sales.reduce((a,s)=>a+share(s[0]),0),sd=S.sales.reduce((a,s)=>a+s[2],0);return ss>0?sd/ss:null}
 function value(n){const p=projPot();return p==null?null:share(n)*p}
 function oddsMissing(){return A.lots.filter(l=>ODDSL[l[0]]==null).map(l=>l[0])}
 function privHTML(n){if(!oddsOn())return`<span>No odds loaded. Paste them in the <b>Odds</b> tab.</span>`;
@@ -437,7 +435,7 @@ function render(){const n=cur(),L=n&&lot(n),pot=S.sales.reduce((a,s)=>a+s[2],0);
   $("#cPot").textContent=fm(pot);$("#cSold").textContent=S.sales.length;
   $("#cLot").textContent=n||"Auction complete";$("#cMem").textContent=L?(A.mem?(A.mem[n]||"")+(L[1].length>2?" · "+L[1].join(", "):""):L[1].length>1?L[1].join(", "):L[2]?"OWGR "+L[2]:""):"";
   $("#priv").innerHTML=n?privHTML(n):"";$("#priv").hidden=!n;
-  if($("#hide"))$("#hide").onclick=()=>{SHOWV=!SHOWV;render()};const pp=projPot(1);$("#cProj").textContent=pp==null?"—":fm(pp);
+  if($("#hide"))$("#hide").onclick=()=>{SHOWV=!SHOWV;render()};const pp=projPot();$("#cProj").textContent=pp==null?"—":fm(pp);
   hint();salesUI();bidUI();
   {const fp=$("#fair");if(fp){const pp=projPot(),left=S.queue.filter(q=>lot(q));$("#fpn").textContent=left.length+" left";
     if(!oddsOn())fp.innerHTML=`<div class="none">Load odds in the Odds tab to see fair prices.</div>`;
@@ -468,7 +466,7 @@ function drawTV(n,pot0){const tv=$("#tv");tv.dataset.ev=EK;document.documentElem
     <div class="res"><div class="rh"><div><div class="k">${R.done?"Final results":"Results so far"}</div><div class="rt2">Who got a steal</div></div><div class="rp"><span class="k">${R.done?"Final pot":"Projected pot"}</span><b>${fm(R.pot)}</b></div></div>
       <div class="cards2">${cards}</div></div>`;
     const box=tv.querySelector(".cards2");let fs=13.5;box.style.fontSize=fs+"px";while(box.scrollWidth>box.clientWidth+2&&fs>8.5){fs-=.5;box.style.fontSize=fs+"px"}
-    return}const PP=projPot(1),pot=PP!=null?PP:oddsOn()?0:pot0;
+    return}const PP=projPot(),pot=PP!=null?PP:oddsOn()?0:pot0;
   const last=S.sales[S.sales.length-1],fl=S.flash&&last,dn=fl?last[0]:n,DL=dn&&lot(dn);
   let bid;
   if(fl)bid=`<div class="bid sold"><small>Sold for</small><div class="amt">${fm(last[2])}</div><div class="who">${tag(last[1])}${esc(last[1])}</div></div>`;
@@ -617,7 +615,7 @@ let LASTBK=0;
 function pracUI(){const p=!!A.practice;$("#pracTab").hidden=!p;$("#pracLbl").textContent=p?"Practice: 2026 lots":"";if(!p&&!document.querySelector('.pn[data-p="prac"]').hidden)document.querySelector('#ptabs [data-p="auc"]').click()}
 /* full size + two-window sync */
 const TVWIN=location.hash==="#tv";let CH=null;try{CH=new BroadcastChannel("osa-auction")}catch(e){}
-function send(){if(TVWIN||!CH)return;try{CH.postMessage({t:"s",ek:EK,s:{sales:S.sales,queue:S.queue.slice(0,1),price:S.price,buyer:S.buyer,flash:S.flash},j:JUST,pp:projPot(1),res:(SHOWRES||!S.queue.length)&&!S.flash?results():null,sr:SHOWRES,sz:TVSIZE,lk:A.look,ts:TVTEST})}catch(e){}}
+function send(){if(TVWIN||!CH)return;try{CH.postMessage({t:"s",ek:EK,s:{sales:S.sales,queue:S.queue.slice(0,1),price:S.price,buyer:S.buyer,flash:S.flash},j:JUST,pp:projPot(),res:(SHOWRES||!S.queue.length)&&!S.flash?results():null,sr:SHOWRES,sz:TVSIZE,lk:A.look,ts:TVTEST})}catch(e){}}
 if(CH)CH.onmessage=e=>{const m=e.data||{};if(TVWIN&&m.t==="s"){if(m.ek&&m.ek!==EK){EK=m.ek;A=EV[EK];BID=Object.keys(A.look).sort();CHAMPS=new Set(A.champs)}Object.assign(S,m.s);JUST=m.j;TVPP=m.pp;TVRES=m.res;SHOWRES=m.sr;if(m.lk){A.look=m.lk;BID=Object.keys(m.lk).sort()}TVTEST=!!m.ts;if(m.sz&&m.sz!==TVSIZE){TVSIZE=m.sz;fit()}SORT=m.o||SORT;render()}else if(!TVWIN&&m.t==="hi")send()};
 function goFull(on){document.documentElement.classList.toggle("full",on);let x=$(".xit");
   if(on&&!x&&!TVWIN){x=document.createElement("button");x.className="xit";x.textContent="Exit full view";x.onclick=()=>goFull(false);document.body.appendChild(x)}
