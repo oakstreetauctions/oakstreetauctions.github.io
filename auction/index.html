@@ -151,7 +151,12 @@ kbd{font:600 11px var(--ui);border:1px solid var(--line);border-bottom-width:2px
 .tv[data-ev="mm"] .bar h3{font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:26px}.tv[data-ev="mm"] .lot{font-weight:700;text-transform:uppercase;font-size:50px}
 .tv[data-ev="mm"] .k,.tv[data-ev="mm"] .pt .big{color:#009cde}.tv[data-ev="mm"] .pcum div:last-child b{color:#009cde}.tv[data-ev="mm"] .bid.sold{color:#fff}.tv[data-ev="mm"] .bid.sold small{color:rgba(255,255,255,.75)}.tv[data-ev="mm"] .sl .r .dd{background:#0b1015}
 .tv[data-ev="mm"]{grid-template-columns:minmax(0,1fr) 350px}
-.tv[data-ev="mm"] .secs{gap:0 12px}.tv[data-ev="mm"] .secs .r{font-size:13.5px!important;grid-template-columns:18px minmax(0,1fr) 38px 34px!important;gap:5px!important}
+.tv[data-ev="mm"] .secs{gap:0 12px}.tv[data-ev="mm"] .secs .r{flex:0 0 var(--rh,31px)!important;font-size:var(--fs,calc(var(--rh,31px)*.6))!important;grid-template-columns:1.2em minmax(0,1fr) 2.8em 2.4em!important;gap:.35em!important}
+.tv[data-ev="mm"] .secs .r:has(.pair){flex-basis:calc(var(--rh,31px)*1.6)!important}
+.tv[data-ev="mm"] .secs .r .pair{font-size:1em!important;line-height:1.12!important}
+.tv[data-ev="mm"] .secs .r i{font-size:.8em!important}
+.tv[data-ev="mm"] .secs .r .ow,.tv[data-ev="mm"] .secs .r .tag{height:min(calc(var(--rh,31px)*.72),1.5em)!important;font-size:.68em!important;min-width:0!important;width:100%}
+.tv[data-ev="mm"] .secs .sh{font-size:calc(var(--rh,31px)*.48)}
 .tv[data-ev="mm"] .rt{padding-left:20px;padding-right:20px}
 .tv .pcum{margin-top:8px;font:600 15px var(--ui);font-variant-numeric:tabular-nums}
 .tv .pcum div{display:grid;grid-template-columns:minmax(0,1fr) 80px 100px;gap:8px;align-items:center;border-bottom:1px solid var(--tvline);padding:5px 0}
@@ -494,7 +499,7 @@ function drawTV(n,pot0){const tv=$("#tv");tv.dataset.ev=EK;document.documentElem
   const AB=s=>{if(s.length<=15)return s;let x=s;for(const [a,b] of [["Southeast","SE"],["Southwest","SW"],["Northeast","NE"],["Northwest","NW"],["State","St"],["Saint","St."],["University","U"],["International","Intl"],["Mississippi","Miss."],["Tennessee","Tenn."],["Louisiana","La."],["Northern","N."],["Southern","So."],["Eastern","E."],["Western","W."],["Central","C."],["Carolina","Car."]]){if(x.length<=15)break;x=x.replace(new RegExp("\\b"+a+"\\b"),b)}return x};
   const row=(l,i,rk)=>{const s=SOLD[l[0]],up=l[0]===n&&!fl,j=s&&fl&&s[0]===JUST;
     const dd=up&&l[1].length>1&&!(A.sections&&l[1].length===2&&/ \/ /.test(l[0]))?`<div class="dd${l[1].length>20?" three":l[1].length>8?" two":""}">${l[1].map(g=>{const w=A.champ&&A.champ[g];return w?`<span class="cw">${esc(g)} <em>${w.map(y=>"’"+String(y).slice(2)).join(" ")}</em></span>`:`<span>${esc(g)}</span>`}).join("")}</div>`:"";
-    return`<div class="r${s?"":" open"}${up?" up":""}${j?" nw":""}${dd?" hasdd":""}"><i>${rk}</i>${A.sections&&l[1].length===2&&/ \/ /.test(l[0])?`<span class="pair"><span>${esc(AB(l[1][0]))}</span><span>${esc(AB(l[1][1]))}</span></span>`:`<span>${esc(A.disp?A.disp[l[0]]||l[0]:nm(l[0]))}</span>`}<b>${s?fm(s[2]):up&&+S.price?fm(+S.price):"—"}</b>${s?ownc(s[1]):up&&S.buyer?ownc(S.buyer):'<em class="tg0"></em>'}${dd}</div>`};
+    return`<div class="r${s?"":" open"}${up?" up":""}${j?" nw":""}${dd?" hasdd":""}"><i>${rk}</i>${A.sections&&l[1].length===2&&/ \/ /.test(l[0])?`<span class="pair"><span>${esc(l[1][0])}</span><span>${esc(l[1][1])}</span></span>`:`<span>${esc(A.disp?A.disp[l[0]]||l[0]:nm(l[0]))}</span>`}<b>${s?fm(s[2]):up&&+S.price?fm(+S.price):"—"}</b>${s?ownc(s[1]):up&&S.buyer?ownc(S.buyer):'<em class="tg0"></em>'}${dd}</div>`};
   const board=A.sections?`<div class="secs" style="--n:${A.sections.length}" data-rows="${Math.max(...A.sections.map(x=>x[1].length))}">${A.sections.map(([h,ns])=>`<div class="sc"><div class="sh">${esc(h)}</div>${ns.map(nn=>{const l=lot(nn);return row(l,0,l[2])}).join("")}</div>`).join("")}</div>`
     :(()=>{const nc=c4?4:3,per=Math.ceil(A.lots.length/nc),cs=[];for(let c=0;c<nc;c++)cs.push(A.lots.slice(c*per,(c+1)*per).map((l,j)=>{const i=c*per+j;return row(l,i,/^(Group|Field)/.test(l[0])?"":l[2]||i+1)}).join(""));
       return`<div class="cols${c4?" c4":A.lots.length>60?" dense":""}" style="--nc:${nc}">${cs.map(x=>`<div class="cc">${x}</div>`).join("")}</div>`})();
@@ -515,17 +520,18 @@ function drawTV(n,pot0){const tv=$("#tv");tv.dataset.ev=EK;document.documentElem
   const rt=tv.querySelector(".rt");if(rt){let k=1;rt.style.setProperty("--k",k);while(rt.scrollHeight>rt.clientHeight+1&&k>.6){k=Math.round((k-.04)*100)/100;rt.style.setProperty("--k",k)}if(rt.scrollHeight>rt.clientHeight+1){const p=rt.querySelector(".pays,.pcum");if(p)p.style.fontSize="12px"}}
   const d=tv.querySelector(".dd");if(d){const k=tv.getBoundingClientRect().width/1280||1,sl=tv.querySelector(".sl").getBoundingClientRect(),row=d.parentElement.getBoundingClientRect();if(row.bottom+(d.offsetHeight+6)*k>sl.bottom-4)d.classList.add("flip")}}
 /* Board text as big as the screen allows: grow row height until the longest column fills the space */
-function fitBoard(){const tv=$("#tv");if(!tv)return;const c=tv.querySelector(".sl .cols");if(!c)return;
-  tv.style.setProperty("--rh","21px");const cc=[...c.querySelectorAll(".cc")];if(!cc.length)return;
-  const rows=Math.max(...cc.map(x=>x.querySelectorAll(":scope>.r").length));if(!rows)return;
-  const avail=c.clientHeight;const rh=Math.max(19,Math.min(34,Math.floor(avail/rows*4)/4));
+function fitBoard(){const tv=$("#tv");if(!tv)return;const c=tv.querySelector(".sl .cols")||(tv.dataset.ev==="mm"&&tv.querySelector(".secs"));if(!c)return;const SX=c.classList.contains("secs");
+  tv.style.setProperty("--rh","21px");const cc=[...c.querySelectorAll(".cc,.sc")];if(!cc.length)return;
+  const rows=Math.max(...cc.map(x=>[...x.querySelectorAll(":scope>.r")].reduce((t,r)=>t+(SX&&r.querySelector(".pair")?1.6:1),0)));if(!rows)return;
+  const sh=SX?((cc[0].querySelector(".sh")||{}).offsetHeight||0)+4:0;const avail=c.clientHeight-sh;const rh=Math.max(19,Math.min(SX?46:34,Math.floor(avail/rows*4)/4));
   tv.style.setProperty("--rh",rh+"px");
   const cur=()=>parseFloat(tv.style.getPropertyValue("--rh")),set=v=>tv.style.setProperty("--rh",v+"px");
   for(let k=0;k<8&&Math.max(...cc.map(x=>x.scrollHeight))>c.clientHeight+1;k++)set(cur()-0.5);
   /* never cut a name short just to make it bigger */
   const sp=[...c.querySelectorAll(".r>span:not(.pair),.r .pair>span")];
   /* names always shown in full: ease a long name up to 10%, and if any still won't fit, step the whole board down */
-  const fit=()=>{let bad=0;sp.forEach(s=>{s.style.fontSize="";if(s.scrollWidth>s.clientWidth+1){const f=s.clientWidth/s.scrollWidth;if(f>=.9)s.style.fontSize=(Math.floor(f*1000)/10)+"%";else bad++}});return bad};
+  const fit=()=>{let bad=0;sp.forEach(s=>{s.style.fontSize="";if(s.scrollWidth>s.clientWidth){const f=s.clientWidth/(s.scrollWidth+1);if(f>=.9)s.style.fontSize=(Math.floor(f*1000)/10)+"%";else bad++}});return bad};
+  if(SX){tv.style.removeProperty("--fs");let fs=Math.min(cur()*.62,26);const sf=v=>tv.style.setProperty("--fs",v+"px");sf(fs);for(let k=0;k<60&&fs>11&&fit();k++){fs-=.5;sf(fs)}return}
   for(let k=0;k<60&&cur()>12&&fit();k++)set(cur()-0.5)}
 {const _dt=drawTV;drawTV=function(){const r=_dt.apply(this,arguments);try{fitBoard()}catch(e){}return r}}
 
