@@ -7,7 +7,7 @@
 
 
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Libre+Franklin:wght@500;700;800&family=Cinzel:wght@500;700&family=Oswald:wght@500;600;700&family=Barlow+Condensed:wght@600;700;800&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Libre+Franklin:wght@500;700;800&family=Source+Serif+4:wght@600;700&family=Oswald:wght@500;600;700&family=Barlow+Condensed:wght@600;700;800&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
 /* Layout: your phone controls on the left, the TV board on the right (tabs on narrow screens). Golf site Masters look. */
 :root{--bg:#f6f4ec;--card:#fff;--fg:#1c2a21;--mut:#6d7468;--line:#e6e2d4;--seg:#f0ede2;--green:#006747;--gold:#f2c94c;--pos:#006747;--neg:#c8102e;--hdr:#006747;--shadow:0 1px 2px rgba(28,42,33,.06),0 4px 14px rgba(28,42,33,.04);--serif:"Libre Caslon Text",Georgia,serif;--ui:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -129,9 +129,9 @@ kbd{font:600 11px var(--ui);border:1px solid var(--line);border-bottom-width:2px
 .tv[data-ev="usopen"] .bid.sold{background:#BF0D3E;border-color:#BF0D3E;color:#fff}.tv[data-ev="usopen"] .bid.sold small{color:rgba(255,255,255,.75)}
 .tv[data-ev="usopen"] .sl .r .dd{background:#071f3a}
 .tv .sl .r .dd.three{grid-template-columns:repeat(3,minmax(0,auto))}
-.tv[data-ev="pga"]{--tv0:#1a3a7a;--tv:#0c2459;--tv2:#06163b;--gold:#C9A961;--serif:"Cinzel",Georgia,serif}
-.tv[data-ev="pga"] .bar h3{font-weight:700;letter-spacing:.06em;font-size:22px}.tv[data-ev="pga"] .lot{font-weight:500;letter-spacing:.02em;font-size:42px}
-.tv[data-ev="pga"] .bid.sold{color:#0c2459}.tv[data-ev="pga"] .sl .r .dd{background:#081a45}
+.tv[data-ev="pga"]{--tv0:#043362;--tv:#00205B;--tv2:#001123;--gold:#AF9157;--serif:"Source Serif 4",Georgia,serif}
+.tv[data-ev="pga"] .bar h3{font-weight:700;letter-spacing:.01em;font-size:25px}.tv[data-ev="pga"] .lot{font-weight:700;letter-spacing:0;font-size:46px}
+.tv[data-ev="pga"] .bid.sold{color:#00205B}.tv[data-ev="pga"] .sl .r .dd{background:#001a3a}
 .tv[data-ev="open"]{--tv0:#1d3d66;--tv:#0f2a4a;--tv2:#081a30;--gold:#FFD100;--serif:"Cormorant Garamond",Georgia,serif}
 .tv[data-ev="open"] .bar h3{font-weight:700;font-size:27px;letter-spacing:.03em}.tv[data-ev="open"] .lot{font-weight:600;font-size:52px}
 .tv[data-ev="open"] .bid.sold{color:#0B2545}.tv[data-ev="open"] .sl .r .dd{background:#0a1f38}
@@ -263,14 +263,14 @@ kbd{font:600 11px var(--ui);border:1px solid var(--line);border-bottom-width:2px
 
 /* Laptop controls wear the same look as the TV board for the auction that is loaded */
 html:root[data-ev="masters"]{--bg:#0a2f22;--card:#1c4738;--seg:#285142;--line:#345a4d;--fg:#f3f5f2;--mut:#a3b5ae;--green:#f2c94c;--gold:#f2c94c;--pos:#5fca98;--neg:#ff7a72;--hdr:#0d3b2b;--shadow:none;--serif:"Libre Caslon Text",Georgia,serif;color-scheme:dark}
-html:root[data-ev="pga"]{--bg:#06163b;--card:#1b3163;--seg:#273c6b;--line:#334774;--fg:#f3f5f2;--mut:#a3acc0;--green:#C9A961;--gold:#C9A961;--pos:#5fca98;--neg:#ff7a72;--hdr:#0c2459;--shadow:none;--serif:"Cinzel",Georgia,serif;color-scheme:dark}
+html:root[data-ev="pga"]{--bg:#001123;--card:#0f2d65;--seg:#1c396d;--line:#294475;--fg:#f3f5f2;--mut:#9eaac1;--green:#AF9157;--gold:#AF9157;--pos:#5fca98;--neg:#ff7a72;--hdr:#00205B;--shadow:none;--serif:"Source Serif 4",Georgia,serif;color-scheme:dark}
 html:root[data-ev="usopen"]{--bg:#061f3b;--card:#1a3b5f;--seg:#264668;--line:#325070;--fg:#f3f5f2;--mut:#a2b0be;--green:#F25C5C;--gold:#F25C5C;--pos:#5fca98;--neg:#ff7a72;--hdr:#0b2f55;--shadow:none;--serif:"Libre Franklin",Inter,sans-serif;color-scheme:dark}
 html:root[data-ev="open"]{--bg:#081a30;--card:#1d3755;--seg:#29415e;--line:#354c67;--fg:#f3f5f2;--mut:#a4aeba;--green:#FFD100;--gold:#FFD100;--pos:#5fca98;--neg:#ff7a72;--hdr:#0f2a4a;--shadow:none;--serif:"Cormorant Garamond",Georgia,serif;color-scheme:dark}
 html:root[data-ev="nfl"]{--bg:#08090b;--card:#23262a;--seg:#2f3135;--line:#3a3d40;--fg:#f3f5f2;--mut:#a6a7a9;--green:#ffffff;--gold:#ffffff;--pos:#5fca98;--neg:#ff7a72;--hdr:#15181c;--shadow:none;--serif:"Oswald",Inter,sans-serif;color-scheme:dark}
 html:root[data-ev="mm"]{--bg:#06090c;--card:#1e242b;--seg:#2a3036;--line:#363b41;--fg:#f3f5f2;--mut:#a4a6a9;--green:#009cde;--gold:#009cde;--pos:#5fca98;--neg:#ff7a72;--hdr:#10161d;--shadow:none;--serif:"Barlow Condensed",Inter,sans-serif;color-scheme:dark}
 html:root[data-ev] body{background:radial-gradient(120% 90% at 25% 0%,var(--ev0) 0%,var(--hdr) 40%,var(--bg) 100%) fixed var(--bg)}
 html:root[data-ev="masters"]{--ev0:#11503a}
-html:root[data-ev="pga"]{--ev0:#1a3a7a}
+html:root[data-ev="pga"]{--ev0:#043362}
 html:root[data-ev="usopen"]{--ev0:#164a7a}
 html:root[data-ev="open"]{--ev0:#1d3d66}
 html:root[data-ev="nfl"]{--ev0:#262a30}
@@ -280,7 +280,7 @@ html:root[data-ev] .fp #fair .r.up{background:color-mix(in srgb,var(--gold) 20%,
 html:root[data-ev] .fp #fair .r.up b,html:root[data-ev] .fp #fair .r.up i{color:var(--fg)}
 html:root[data-ev] .ptabs{background:rgba(0,0,0,.28);border-bottom:1px solid var(--line)}
 html:root[data-ev="masters"]{--tv2:#0a2f22}
-html:root[data-ev="pga"]{--tv2:#06163b}
+html:root[data-ev="pga"]{--tv2:#001123}
 html:root[data-ev="usopen"]{--tv2:#061f3b}
 html:root[data-ev="open"]{--tv2:#081a30}
 html:root[data-ev="nfl"]{--tv2:#08090b}
