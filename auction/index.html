@@ -286,6 +286,22 @@ html:root[data-ev="open"]{--tv2:#081a30}
 html:root[data-ev="nfl"]{--tv2:#08090b}
 html:root[data-ev="mm"]{--tv2:#06090c}
 html:root[data-ev] .tvbox{background:var(--tv2)}
+
+/* bigger board: slimmer header and stage, rows sized to fill */
+.tv{grid-template-rows:46px minmax(0,1fr)!important;grid-template-columns:minmax(0,1fr) 352px!important}
+.tv .rt{padding:10px 18px 8px!important}
+.tv .pt{gap:10px!important}.tv .pt>*:first-child{white-space:nowrap;letter-spacing:.14em!important}
+.tv .sl .cols{gap:0 12px!important}
+.tv .bar h3{font-size:22px}
+.tv .stage{padding:8px 28px 8px!important}
+.tv .bid{padding:6px 18px!important}
+.tv .bid .amt{font-size:48px!important}
+.tv .sl{padding:6px 14px 8px 18px!important}
+.tv .sl .cols{margin-top:4px!important}
+.tv .sl .r,.tv .sl .cols.c4 .r,.tv .sl .cols.dense .r{height:var(--rh,21px)!important;font-size:calc(var(--rh,21px)*.68)!important;grid-template-columns:1.3em minmax(0,1fr) 2.9em 2.5em!important;gap:.4em!important}
+.tv .sl .cols.c4 .r{grid-template-columns:1.35em minmax(0,1fr) 2.9em 2.7em!important;gap:.4em!important}
+.tv .sl .r i{font-size:.8em!important}
+.tv .sl .r .tag,.tv .sl .cols.c4 .ow,.tv .sl .r .ow{height:calc(var(--rh,21px)*.8)!important;font-size:calc(var(--rh,21px)*.47)!important;min-width:0!important;width:100%}
 </style>
 
 <div class="top"><h1>Oak Street <span>Auction Night</span></h1><select id="evsel" class="evtop" aria-label="Auction"><option value="masters">Masters (56 lots)</option><option value="pga">PGA Championship (65 lots)</option><option value="usopen">U.S. Open (65 lots)</option><option value="open">The Open (66 lots)</option><option value="nfl">NFL Playoffs (14 teams)</option><option value="mm">March Madness (52 lots)</option></select><p><a href="/" style="color:inherit;text-decoration:none">Oak Street Auctions</a><br><span id="pracLbl">Practice: 2026 lots</span></p></div>
@@ -492,6 +508,21 @@ function drawTV(n,pot0){const tv=$("#tv");tv.dataset.ev=EK;document.documentElem
     <div class="bl"><div class="k" style="margin-bottom:4px">Spent</div>${bl}<div class="r tot"><span></span><span>Total</span><i>${S.sales.length} sold</i><b>${fm(pot0)}</b></div></div></div>`;
   const rt=tv.querySelector(".rt");if(rt){let k=1;rt.style.setProperty("--k",k);while(rt.scrollHeight>rt.clientHeight+1&&k>.6){k=Math.round((k-.04)*100)/100;rt.style.setProperty("--k",k)}if(rt.scrollHeight>rt.clientHeight+1){const p=rt.querySelector(".pays,.pcum");if(p)p.style.fontSize="12px"}}
   const d=tv.querySelector(".dd");if(d){const k=tv.getBoundingClientRect().width/1280||1,sl=tv.querySelector(".sl").getBoundingClientRect(),row=d.parentElement.getBoundingClientRect();if(row.bottom+(d.offsetHeight+6)*k>sl.bottom-4)d.classList.add("flip")}}
+/* Board text as big as the screen allows: grow row height until the longest column fills the space */
+function fitBoard(){const tv=$("#tv");if(!tv)return;const c=tv.querySelector(".sl .cols");if(!c)return;
+  tv.style.setProperty("--rh","21px");const cc=[...c.querySelectorAll(".cc")];if(!cc.length)return;
+  const rows=Math.max(...cc.map(x=>x.querySelectorAll(":scope>.r").length));if(!rows)return;
+  const avail=c.clientHeight;const rh=Math.max(19,Math.min(34,Math.floor(avail/rows*4)/4));
+  tv.style.setProperty("--rh",rh+"px");
+  const cur=()=>parseFloat(tv.style.getPropertyValue("--rh")),set=v=>tv.style.setProperty("--rh",v+"px");
+  for(let k=0;k<8&&Math.max(...cc.map(x=>x.scrollHeight))>c.clientHeight+1;k++)set(cur()-0.5);
+  /* never cut a name short just to make it bigger */
+  const sp=[...c.querySelectorAll(".r>span:not(.pair),.r .pair>span")];
+  /* names always shown in full: ease a long name up to 10%, and if any still won't fit, step the whole board down */
+  const fit=()=>{let bad=0;sp.forEach(s=>{s.style.fontSize="";if(s.scrollWidth>s.clientWidth+1){const f=s.clientWidth/s.scrollWidth;if(f>=.9)s.style.fontSize=(Math.floor(f*1000)/10)+"%";else bad++}});return bad};
+  for(let k=0;k<60&&cur()>12&&fit();k++)set(cur()-0.5)}
+{const _dt=drawTV;drawTV=function(){const r=_dt.apply(this,arguments);try{fitBoard()}catch(e){}return r}}
+
 function sell(name,owner,price){S.sales.push([name,owner,price]);S.queue=S.queue.filter(q=>q!==name);S.price="";S.buyer="";S.flash=1;JUST=name;clearTimeout(sell.t);sell.t=setTimeout(()=>{S.flash=0;render()},timer?240:2200);render()}
 const TAGOF=b=>(A.look[b]||[b])[0].toLowerCase(),NRM=s=>s.toLowerCase().replace(/[^a-z0-9 ]/g,"").replace(/\s+/g," ").trim();
 function match(q){q=NRM(q);if(!q)return{b:"",opts:[]};const ex=BID.filter(b=>TAGOF(b)===q.replace(/ /g,""));if(ex.length===1)return{b:ex[0],opts:ex};
