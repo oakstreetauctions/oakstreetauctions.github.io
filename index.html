@@ -10,18 +10,17 @@
 <meta property="og:url" content="https://oakstreetauctions.github.io/">
 <meta property="og:image" content="https://oakstreetauctions.github.io/apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#f5f5f4" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0b2a1e">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f6f4ec;--card:#fff;--fg:#1c2a21;--mut:#6d7468;--line:#e6e2d4;--row:#faf9f4;--green:#006747;--deep:#0b2a1e;--gold:#d9b54a;--pos:#0d7a47;--neg:#c8102e;
   --shadow:0 1px 2px rgba(28,42,33,.06),0 8px 24px rgba(28,42,33,.06);--serif:"Libre Caslon Text",Georgia,serif;--ui:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
   --golf:#006747;--mm:#009cde;--nfl:#d50a0a}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .golf{--c:#34a874}:root:not([data-theme="light"]){--bg:#0a110d;--card:#121b16;--fg:#eef1ea;--mut:#9aa396;--line:#243029;--row:#16201a;--green:#4fb98a;--pos:#5fca98;--neg:#ff7a72;--shadow:none}}
-:root[data-theme="dark"] .golf{--c:#34a874}:root[data-theme="dark"]{--bg:#0a110d;--card:#121b16;--fg:#eef1ea;--mut:#9aa396;--line:#243029;--row:#16201a;--green:#4fb98a;--pos:#5fca98;--neg:#ff7a72;--shadow:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a110d;--card:#121b16;--fg:#eef1ea;--mut:#9aa396;--line:#243029;--row:#16201a;--green:#4fb98a;--pos:#5fca98;--neg:#ff7a72;--shadow:none}}
+:root[data-theme="dark"]{--bg:#0a110d;--card:#121b16;--fg:#eef1ea;--mut:#9aa396;--line:#243029;--row:#16201a;--green:#4fb98a;--pos:#5fca98;--neg:#ff7a72;--shadow:none}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.45 var(--ui);-webkit-font-smoothing:antialiased;font-variant-ligatures:no-common-ligatures;font-feature-settings:"liga" 0,"dlig" 0}
@@ -100,58 +99,24 @@ main{position:relative;z-index:2;max-width:980px;margin:16px auto 0;padding:0 16
 footer{max-width:948px;margin:36px 16px 0;padding:26px 0 calc(28px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font:13px var(--ui);color:var(--mut)}
 footer b{font:400 italic 16px var(--serif);color:var(--fg)}footer nav{display:flex;gap:16px}footer nav a{text-decoration:none}footer nav a:hover{color:var(--fg)}
 @media(min-width:980px){footer{margin-left:auto;margin-right:auto}}
-
-/* ===== simplified: one typeface, four sizes (13 / 15 / 20 / 28), two weights ===== */
-:root{--bg:#f5f5f4;--card:#fff;--fg:#18181b;--mut:#71717a;--line:#e7e5e4;--row:#fafaf9;--green:#18181b;--serif:var(--ui);--shadow:0 1px 2px rgba(0,0,0,.04)}
-body{font:400 15px/1.5 var(--ui)}
-.top{background:none;color:var(--fg);border:0;text-align:left;max-width:980px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,0px) + 24px) 18px 4px}
-.top .cr{margin:0;width:36px;height:36px;border:0;background:var(--fg);color:#fff;font:600 13px var(--ui);letter-spacing:0}
-.top h1{margin:0;font:600 20px/1.2 var(--ui);letter-spacing:0}
-@media(min-width:700px){.top{padding-top:32px}.top .cr{width:36px;height:36px;font-size:13px}.top h1{font-size:20px}}
-.sec{margin:40px 2px 12px}.sec h2{font:600 20px/1.2 var(--ui)}
-.sec span,.nx small,.cd small,.nums small,.st small,.lt .m small,.lb th,.tl .d b,.tl .d small,.cal small,.pill{font:400 13px/1.3 var(--ui)!important;letter-spacing:0!important;text-transform:none!important;color:var(--mut)}
-.next{border-top:0}.cal{border-color:var(--line)}.cal b{font:600 13px var(--ui);letter-spacing:0;padding:3px 0}.cal strong{font:600 20px/1.3 var(--ui);padding-top:4px}.cal small{padding-bottom:6px}
-.nx h3{font:600 20px/1.25 var(--ui);margin:2px 0}.nx p{font-size:13px}
-.cd strong,.nums strong{font:600 28px/1.1 var(--ui)}
-.st strong{font:600 20px/1.2 var(--ui)}
-.ah{background:var(--card)!important;color:var(--fg);min-height:0;padding:18px 20px 4px;border-top:4px solid var(--c)}
-.ah:after{display:none}.ah .ico{background:color-mix(in srgb,var(--c) 12%,transparent);color:var(--c);width:36px;height:36px;border-radius:9px}
-.auc h3,.mm .ah h3,.nfl .ah h3{font:600 20px/1.2 var(--ui)!important;text-transform:none!important;letter-spacing:0!important;margin-top:12px}
-.ah p{font-size:13px;opacity:1;color:var(--mut);font-weight:400}
-.golf{--c:#006747}.mm{--c:#009cde}.nfl{--c:#d50a0a}
-.lt .m span{font-size:13px}.open{font-size:13px}
-.tl .d strong{font:600 20px/1.2 var(--ui)}.tl .n strong{font:600 15px var(--ui)}.tl .n span{font-size:13px}
-.pill{border:0;padding:0}.pill.nx{padding:3px 9px;color:#fff!important;background:var(--fg)}.pill.lv{padding:3px 9px;color:#fff!important}
-.lb table{font:400 15px var(--ui)}.lb td{font-size:15px}.lb th{text-align:right}.lb .rk{font:400 13px var(--ui)}.lb .tot{font:600 15px var(--ui)}.lb .tr{font:400 13px var(--ui)}
-.note{font-size:13px}.more{font:600 13px var(--ui)}
-footer{font-size:13px}footer b{font:600 15px var(--ui)}
-.ab{padding-bottom:20px}
-
-/* cards: icon beside the name, numbers on one line under a hairline */
-.auc .ah{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;padding:18px 20px 16px;min-height:0}
-.auc .ah>div{min-width:0}.auc .ah h3{margin:0!important;line-height:1.2}.auc .ah p{margin:2px 0 0}
-.auc .ah .ico{width:40px;height:40px}
-.auc .ah:after{display:block;content:"→";position:static;width:auto;background:none;opacity:1;color:var(--mut);font:400 20px var(--ui);transition:transform .15s}
-.auc:hover .ah:after{transform:translateX(3px);color:var(--fg)}
-.auc .ab{padding:0 20px 18px;gap:0;flex:0}
-.auc .st{display:flex;gap:36px;padding-top:14px;border-top:1px solid var(--line)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111113;--card:#1a1a1d;--fg:#f4f4f5;--mut:#a1a1aa;--line:#2a2a2e;--row:#1f1f22;--green:#f4f4f5;--pos:#5fca98;--neg:#ff7a72;--shadow:none;color-scheme:dark}:root:not([data-theme="light"]) .top .cr{background:#f4f4f5;color:#111113} :root:not([data-theme="light"]) .pill.nx{background:#f4f4f5!important;color:#111113!important}}
-:root[data-theme="dark"]{--bg:#111113;--card:#1a1a1d;--fg:#f4f4f5;--mut:#a1a1aa;--line:#2a2a2e;--row:#1f1f22;--green:#f4f4f5;--pos:#5fca98;--neg:#ff7a72;--shadow:none;color-scheme:dark}:root[data-theme="dark"] .top .cr{background:#f4f4f5;color:#111113} :root[data-theme="dark"] .pill.nx{background:#f4f4f5!important;color:#111113!important}
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,800&family=Oswald:wght@700&display=swap" rel="stylesheet">
 <script src="summary.js"></script>
 </head>
 <body>
 <header class="top"><a class="cr" href="/" aria-label="Oak Street Auctions home">OSA</a><h1>Oak Street Auctions</h1></header>
 <main>
   <a class="card next" id="next" href="#calendar"></a>
+  <div class="card nums" id="nums"></div>
 
-  <div class="sec" id="auctions"><h2>The auctions</h2></div>
+  <div class="sec" id="auctions"><h2>The auctions</h2><span>Three Calcuttas</span></div>
   <div class="grid3" id="aucs"></div>
 
   <div class="sec" id="calendar"><h2>Auction calendar</h2><span id="season"></span></div>
   <div class="card tl" id="tl"></div>
+  <div class="note">Golf auctions are the Wednesday before each tournament, March Madness the Monday before the First Four, and the NFL the day before the first playoff game.</div>
 
-  <div class="sec" id="leaderboard"><h2>Oak Street leaderboard</h2></div>
+  <div class="sec" id="leaderboard"><h2>Oak Street leaderboard</h2><span>Net</span></div>
   <div class="card lb" id="lb"></div>
   <div class="note">Net across every finished auction: golf majors and FedEx Cup Playoffs, March Madness and the NFL playoffs. 🏆 = champions owned.</div>
 </main>
@@ -168,10 +133,11 @@ const dk=s=>new Date(s+"T12:00:00");
 function draw(sched){const O=window.OSA,S=O.sites,today=new Date();today.setHours(0,0,0,0);
   const y0=Math.min(...Object.values(S).map(s=>s.y0));if($("kick"))$("kick").textContent="Calcuttas since "+y0;
   const tot=Object.values(S).reduce((a,s)=>a+s.auctions,0),pots=Object.values(S).reduce((a,s)=>a+s.pots,0);
-  if($("nums"))$("nums").innerHTML=`<div><strong>${tot}</strong><small>Auctions</small></div><div><strong>${fm(pots)}</strong><small>In pots</small></div><div><strong>${O.board.length}</strong><small>Bidders</small></div><div><strong>${Math.max(...Object.values(S).map(s=>s.y1))-y0+1}</strong><small>Seasons</small></div>`;
+  $("nums").innerHTML=`<div><strong>${tot}</strong><small>Auctions</small></div><div><strong>${fm(pots)}</strong><small>In pots</small></div><div><strong>${O.board.length}</strong><small>Bidders</small></div><div><strong>${Math.max(...Object.values(S).map(s=>s.y1))-y0+1}</strong><small>Seasons</small></div>`;
   $("aucs").innerHTML=["golf","mm","nfl"].map(k=>{const s=S[k],p=SP[k];const owners=(s.last.owner||"").split(" & ").filter(Boolean);
     return`<a class="card auc ${k}" href="${p.url}"><div class="ah"><span class="ico">${svg(p.ic)}</span><div><h3>${p.n}</h3><p>${p.sub}</p></div></div>
-    <div class="ab"><div class="st"><div><strong>${s.auctions}</strong><small>${p.what}</small></div><div><strong>${fm(s.pots)}</strong><small>in pots</small></div></div></div></a>`}).join("");
+    <div class="ab"><div class="st"><div><strong>${s.auctions}</strong><small>${p.what}</small></div><div><strong>${fm(s.pots)}</strong><small>in pots</small></div><div><strong>’${String(s.y0).slice(2)}–’${String(s.y1).slice(2)}</strong><small>seasons</small></div></div>
+    <div class="lt">${owners.map(tag).join("")}<div class="m"><small>Latest champion</small><span>${s.last.champ} · ${s.last.ev}</span></div><span class="open">Open →</span></div></div></a>`}).join("");
   // calendar
   const ev=(sched&&sched.auctions||[]).map(a=>Object.assign({},a,{dt:dk(a.date)})).sort((a,b)=>a.dt-b.dt);
   $("season").textContent=sched?sched.season+" season":"";
