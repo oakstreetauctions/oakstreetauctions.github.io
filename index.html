@@ -65,7 +65,7 @@ main{position:relative;z-index:2;max-width:980px;margin:16px auto 0;padding:0 16
 .mm .ah{background:linear-gradient(150deg,#111,#000);--s1:#009cde;--s2:#8a9099}.mm .ah h3{font:italic 800 27px/1 "Barlow Condensed",var(--ui);text-transform:uppercase;letter-spacing:.01em}
 .nfl .ah{background:linear-gradient(150deg,#013369,#01244a);--s1:#d50a0a;--s2:#fff}.nfl .ah h3{font:700 26px/1 Oswald,var(--ui);text-transform:uppercase;letter-spacing:.02em}
 .ab{padding:16px 20px 18px;display:flex;flex-direction:column;gap:14px;flex:1}
-.st{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.st{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .st strong{display:block;font:400 20px/1.15 var(--serif);white-space:nowrap}.st small{font:600 9.5px var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
 .lt{display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--line);font:13px var(--ui)}
 .lt .m{flex:1;min-width:0}.lt .m small{display:block;font:600 9.5px var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
@@ -135,7 +135,7 @@ function draw(sched){const O=window.OSA,S=O.sites,today=new Date();today.setHour
   $("nums").innerHTML=`<div><strong>${tot}</strong><small>Auctions</small></div><div><strong>${fm(pots)}</strong><small>In pots</small></div><div><strong>${O.board.length}</strong><small>Bidders</small></div><div><strong>${Math.max(...Object.values(S).map(s=>s.y1))-y0+1}</strong><small>Seasons</small></div>`;
   $("aucs").innerHTML=["golf","mm","nfl"].map(k=>{const s=S[k],p=SP[k];const owners=(s.last.owner||"").split(" & ").filter(Boolean);
     return`<a class="card auc ${k}" href="${p.url}"><div class="ah"><span class="ico">${svg(p.ic)}</span><div><h3>${p.n}</h3><p>${p.sub}</p></div></div>
-    <div class="ab"><div class="st"><div><strong>${s.auctions}</strong><small>${p.what}</small></div><div><strong>${fm(s.pots)}</strong><small>in pots</small></div><div><strong>’${String(s.y0).slice(2)}–’${String(s.y1).slice(2)}</strong><small>seasons</small></div></div>
+    <div class="ab"><div class="st"><div><strong>${s.auctions}</strong><small>${p.what}</small></div><div><strong>${fm(s.pots)}</strong><small>in pots</small></div></div>
     <div class="lt">${owners.map(tag).join("")}<div class="m"><small>Latest champion</small><span>${s.last.champ} · ${s.last.ev}</span></div><span class="open">Open →</span></div></div></a>`}).join("");
   // calendar
   const ev=(sched&&sched.auctions||[]).map(a=>Object.assign({},a,{dt:dk(a.date)})).sort((a,b)=>a.dt-b.dt);
