@@ -10,6 +10,7 @@ ASSET_DIR = ROOT / "assets" / "ncaa"
 LOGO_DIR = ASSET_DIR / "logos"
 IDS_FILE = ASSET_DIR / "espn_ids.json"
 LOGO_DIR.mkdir(parents=True, exist_ok=True)
+FALLBACK_SLUGS = {"Fairleigh Dickinson": "fairleigh-dickinson", "Mercyhurst": "mercyhurst", "Tarleton St.": "tarleton-state", "West Georgia": "west-georgia"}
 
 def key(value):
     return re.sub(r"[^a-z0-9]", "", value.lower())
@@ -44,19 +45,33 @@ def download(item):
     if path.exists() and path.stat().st_size > 1000:
         return name, team_id, "cached", None
     url = f"https://a.espncdn.com/i/teamlogos/ncaa/500/{team_id}.png"
+    last_error = None
     for attempt in range(3):
         try:
             req = Request(url, headers={"User-Agent": "OakStreetAuctions-NCAA-assets/1.0"})
             with urlopen(req, timeout=25) as response:
                 data = response.read()
             if not data.startswith(b"\x89PNG\r\n\x1a\n"):
-                return name, team_id, "invalid", "Response was not PNG"
+                raise ValueError("ESPN response was not PNG")
             path.write_bytes(data)
             return name, team_id, "downloaded", None
-        except (HTTPError, URLError, TimeoutError, OSError) as exc:
-            if attempt == 2:
-                return name, team_id, "missing", str(exc)
-            time.sleep(1.5 * (attempt + 1))
+        except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
+            last_error = str(exc)
+            if attempt < 2:
+                time.sleep(1.5 * (attempt + 1))
+    slug = FALLBACK_SLUGS.get(name)
+    if slug:
+        try:
+            req = Request("https://ncaa-api.henrygd.me/logo/" + slug + ".svg", headers={"User-Agent": "OakStreetAuctions-NCAA-assets/1.0"})
+            with urlopen(req, timeout=25) as response:
+                svg = response.read()
+            if b"<svg" not in svg[:1000]:
+                raise ValueError("NCAA fallback response was not SVG")
+            (LOGO_DIR / (str(team_id) + ".svg")).write_bytes(svg)
+            return name, team_id, "downloaded-svg", None
+        except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
+            last_error += "; NCAA fallback: " + str(exc)
+    return name, team_id, "missing", last_error
 
 results = []
 with ThreadPoolExecutor(max_workers=12) as pool:
@@ -66,16 +81,18 @@ with ThreadPoolExecutor(max_workers=12) as pool:
 
 manifest = {}
 for name, team_id in teams.items():
-    local = f"../assets/ncaa/logos/{team_id}.png"
-    manifest[key(name)] = local
+    suffix = "svg" if (LOGO_DIR / (str(team_id) + ".svg")).exists() else "png"
+    manifest[key(name)] = "../assets/ncaa/logos/" + str(team_id) + "." + suffix
 for alias, canonical in aliases.items():
     if canonical in teams:
-        manifest[key(alias)] = f"../assets/ncaa/logos/{teams[canonical]}.png"
+        team_id = teams[canonical]
+        suffix = "svg" if (LOGO_DIR / (str(team_id) + ".svg")).exists() else "png"
+        manifest[key(alias)] = "../assets/ncaa/logos/" + str(team_id) + "." + suffix
 
 (ASSET_DIR / "teams.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
 report = {
     "expected_teams": len(teams),
-    "downloaded_or_cached": sum(r[2] in ("downloaded", "cached") for r in results),
+    "downloaded_or_cached": sum(r[2] in ("downloaded", "cached", "downloaded-svg") for r in results),
     "missing": [{"school": n, "espn_id": i, "reason": e} for n, i, status, e in results if status not in ("downloaded", "cached")],
     "logo_files": len(list(LOGO_DIR.glob("*.png"))),
 }
