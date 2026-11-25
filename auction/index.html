@@ -2,10 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Oak Street Auction Night</title>
 <meta name="robots" content="noindex"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<style>:root{color-scheme:light}html,body{margin:0}[hidden]{display:none!important}
-/* names: no fused letters (Scheffler's "ffl") */
-body,.tv{font-variant-ligatures:no-common-ligatures;font-feature-settings:"liga" 0,"clig" 0}
-</style>
+<style>:root{color-scheme:light}html,body{margin:0}[hidden]{display:none!important}</style>
 </head><body>
 
 
@@ -345,6 +342,9 @@ html:root[data-ev] .tvbox{background:var(--tv2)}
 .tv[data-ev="pga"] .sl .r.nw,.tv[data-ev="pga"] .bl .r.nw{background:rgba(255,255,255,.18);box-shadow:0 0 0 2px rgba(255,255,255,.18)}
 .tv[data-ev="pga"] .pp.m{background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
 .tv[data-ev="pga"] .bid.sold small{color:rgba(0,32,91,.65)}
+
+/* names: no fused letters (Scheffler's "ffl"); applied to every element because each "font:" setting would otherwise reset it */
+*{font-variant-ligatures:none!important;font-feature-settings:"liga" 0,"clig" 0,"dlig" 0!important}
 </style>
 
 <div class="top"><h1>Oak Street <span>Auction Night</span></h1><select id="evsel" class="evtop" aria-label="Auction"><option value="masters">Masters (56 lots)</option><option value="pga">PGA Championship (65 lots)</option><option value="usopen">U.S. Open (65 lots)</option><option value="open">The Open (66 lots)</option><option value="nfl">NFL Playoffs (14 teams)</option><option value="mm">March Madness (52 lots)</option></select><p><a href="/" style="color:inherit;text-decoration:none">Oak Street Auctions</a><br><span id="pracLbl">Practice: 2026 lots</span></p></div>
@@ -610,6 +610,7 @@ function fixHang(){document.querySelectorAll("#cLot, #tv .stage .lot").forEach(e
   const cs=getComputedStyle(el);HANGC.font=cs.fontStyle+" "+cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily;const ov=HANGC.measureText(t[0]).actualBoundingBoxLeft;
   if(ov>0.5)el.style.textIndent=ov.toFixed(1)+"px"})}
 {const _rh=render;render=function(){const r=_rh.apply(this,arguments);try{fixHang()}catch(e){}return r}}
+if(document.fonts){document.fonts.ready.then(()=>{try{fixHang()}catch(e){}});document.fonts.addEventListener&&document.fonts.addEventListener("loadingdone",()=>{try{fixHang()}catch(e){}})}
 
 function sell(name,owner,price){S.sales.push([name,owner,price]);S.queue=S.queue.filter(q=>q!==name);S.price="";S.buyer="";S.flash=1;JUST=name;clearTimeout(sell.t);sell.t=setTimeout(()=>{S.flash=0;render()},timer?240:2200);render()}
 const TAGOF=b=>(A.look[b]||[b])[0].toLowerCase(),NRM=s=>s.toLowerCase().replace(/[^a-z0-9 ]/g,"").replace(/\s+/g," ").trim();
