@@ -311,6 +311,11 @@ html:root[data-ev] .tvbox{background:var(--tv2)}
 .tv .sl .cols{gap:0 12px!important}
 .tv .bar h3{font-size:22px}
 .tv .stage{padding:8px 28px 8px!important}
+/* current-bid box: centered in the header, equal gap above, below and to the right */
+.tv .stage{padding-right:var(--bgap,18px)!important}
+.tv .stage>*:not(.bid):not(.tbg){grid-column:1}
+.tv .stage .bid{grid-row:1/span 3;grid-column:2;align-self:stretch;margin:calc(var(--bgap,18px) - 8px) 0}
+.tv .stage.team[data-tv="fade"] .bid{margin-bottom:calc(var(--bgap,18px) - 2px)}
 .tv .bid{padding:6px 18px!important}
 .tv .bid .amt{font-size:48px!important}
 .tv .sl{padding:6px 14px 8px 18px!important}
