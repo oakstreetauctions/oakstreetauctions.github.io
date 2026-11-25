@@ -98,3 +98,79 @@ report = {
 }
 (ASSET_DIR / "build-report.json").write_text(json.dumps(report, indent=2) + "\n")
 print(json.dumps(report, indent=2))
+
+# Create a visual audit sheet using each auction lot's actual primary team background.
+try:
+    from PIL import Image, ImageDraw, ImageFont
+    import cairosvg
+    html = (ROOT / "auction" / "index.html").read_text()
+    marker = '"mm":{'
+    pos = html.index(marker) + len('"mm":')
+    depth = 0
+    quoted = False
+    escaped = False
+    end = pos
+    for end in range(pos, len(html)):
+        ch = html[end]
+        if quoted:
+            if escaped: escaped = False
+            elif ch == "\\\\": escaped = True
+            elif ch == '"': quoted = False
+        else:
+            if ch == '"': quoted = True
+            elif ch == '{': depth += 1
+            elif ch == '}':
+                depth -= 1
+                if depth == 0:
+                    end += 1
+                    break
+    mm = json.loads(html[pos:end])
+    colors = mm.get("tc", {})
+    lots = mm.get("lots", [])
+    audit = []
+    for lot in lots:
+        name, teams, seed = lot
+        if len(teams) != 1 or not str(seed).isdigit() or not 1 <= int(seed) <= 12:
+            continue
+        k = key(name)
+        rel = manifest.get(k)
+        if not rel:
+            continue
+        # Manifest paths are relative to /auction; resolve them from repository root.
+        relpath = rel.replace("../", "", 1)
+        pth = ROOT / relpath
+        pair = colors.get(name, [["#333333", "#FFFFFF"]])[0]
+        audit.append((name, pair[0], pth))
+    cols, cell_w, cell_h = 8, 180, 142
+    rows = (len(audit) + cols - 1) // cols
+    sheet = Image.new("RGB", (cols * cell_w, rows * cell_h), "#20242b")
+    draw = ImageDraw.Draw(sheet)
+    try: font = ImageFont.truetype("DejaVuSans.ttf", 13)
+    except OSError: font = ImageFont.load_default()
+    for idx, (name, bg, pth) in enumerate(audit):
+        x, y = (idx % cols) * cell_w, (idx // cols) * cell_h
+        rgb = tuple(int(bg.lstrip("#")[i:i+2], 16) for i in (0, 2, 4))
+        tile = Image.new("RGB", (cell_w, cell_h), rgb)
+        # Mirror the TV view's darkened radial gradient approximately.
+        import math
+        px = tile.load()
+        for yy in range(cell_h):
+            for xx in range(cell_w):
+                f = max(0.72, 1 - 0.22 * math.sqrt(((xx / cell_w) - .2)**2 + (yy / cell_h)**2))
+                px[xx, yy] = tuple(int(c*f) for c in rgb)
+        sheet.paste(tile, (x, y))
+        try:
+            if pth.suffix.lower() == ".svg":
+                raw = cairosvg.svg2png(url=str(pth), output_width=100, output_height=100)
+                import io
+                logo = Image.open(io.BytesIO(raw)).convert("RGBA")
+            else:
+                logo = Image.open(pth).convert("RGBA")
+            logo.thumbnail((92, 92), Image.Resampling.LANCZOS)
+            sheet.paste(logo, (x + (cell_w-logo.width)//2, y + 7), logo)
+        except Exception as exc:
+            draw.text((x+8,y+35), "LOGO ERROR", fill="white", font=font)
+        draw.text((x+6, y+108), name, fill="white", font=font, stroke_width=1, stroke_fill="#111111")
+    sheet.save(ROOT / "assets" / "ncaa" / "logo-visibility-audit.jpg", quality=92)
+except Exception as exc:
+    (ROOT / "assets" / "ncaa" / "audit-error.txt").write_text(repr(exc))
