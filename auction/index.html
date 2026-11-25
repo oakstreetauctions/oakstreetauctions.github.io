@@ -184,7 +184,7 @@ kbd{font:600 11px var(--ui);border:1px solid var(--line);border-bottom-width:2px
 .tv[data-ev="mm"] .stage.team .team-title .lot{min-width:0;overflow:visible;text-overflow:clip}
 .tv[data-ev="mm"] .stage.team .team-logo{display:block;flex:0 0 auto;width:82px;height:82px;object-fit:contain;opacity:1;pointer-events:none}
 .tv[data-ev="mm"] .stage.team .team-logo.ncaa-light{filter:brightness(0) invert(1)}
-.team-logo.ncaa-outline{filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(1px 1px 0 #fff) drop-shadow(-1px -1px 0 #fff) drop-shadow(1px -1px 0 #fff) drop-shadow(-1px 1px 0 #fff)}
+.team-logo.ncaa-outline{filter:drop-shadow(0 0 1.5px #fff) drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff) drop-shadow(1px 1px 0 #fff) drop-shadow(-1px -1px 0 #fff) drop-shadow(1px -1px 0 #fff) drop-shadow(-1px 1px 0 #fff)}
 /* team colors: straight edges only, so they stay sharp at any size */
 .tv .stage.team{background:var(--p)}
 .tv .stage.team[data-two="1"]{background:linear-gradient(90deg,var(--p) 0 44%,var(--p2) 56% 100%)}
@@ -492,7 +492,7 @@ const NCAA_LOGOS=Object.create(null);
 let NCAA_LOGOS_LOADING=false,NCAA_LOGOS_READY=false;
 const NCAA_KEY=s=>String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const NCAA_LIGHT_LOGOS=new Set(["Duke","UCLA","TCU","Clemson","Texas A&M","Iowa","Alabama","Virginia","Tennessee","St John's","Utah State","Ohio State"].map(NCAA_KEY));
-function ncaaNeedsOutline(name){return NCAA_KEY(name)==="michiganstate";}
+function ncaaNeedsOutline(name){return NCAA_KEY(name).replace(/st$/,"state")==="michiganstate";}
 function ncaaNeedsLightLogo(name){return NCAA_LIGHT_LOGOS.has(NCAA_KEY(name));}
 function ncaaLogoFor(name){
  const key=NCAA_KEY(name);
