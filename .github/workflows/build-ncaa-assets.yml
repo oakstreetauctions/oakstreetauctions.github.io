@@ -21,8 +21,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install image tools
+        run: pip install pillow cairosvg
       - name: Download all team logos and generate manifest
         run: python scripts/build_ncaa_assets.py
+      - name: Upload logo visibility audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: ncaa-logo-visibility-audit
+          path: assets/ncaa/logo-visibility-audit.jpg
+          if-no-files-found: error
       - name: Commit local logo assets
         run: |
           git config user.name "github-actions[bot]"
