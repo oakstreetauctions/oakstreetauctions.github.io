@@ -493,7 +493,7 @@ let NCAA_LOGOS_LOADING=false,NCAA_LOGOS_READY=false;
 const NCAA_KEY=s=>String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const NCAA_LIGHT_LOGOS=new Set(["Duke","UCLA","TCU","Clemson","Texas A&M","Iowa","Alabama","Virginia","Tennessee","St John's","Utah State","Ohio State"].map(NCAA_KEY));
 function ncaaNameKeys(name){
- const words=String(name||"").normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().match(/[a-z0-9]+/g)||[];
+ const words=String(name||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().match(/[a-z0-9]+/g)||[];
  if(!words.length)return [];
  // Treat State, St., St, and Saint as interchangeable whole-word school-name forms.
  const forms=[words];
