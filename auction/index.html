@@ -493,9 +493,14 @@ const NCAA_KEY=s=>String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"")
 const NCAA_LIGHT_LOGOS=new Set(["Duke","UCLA","TCU","Clemson","Texas A&M","Iowa","Alabama","Virginia","Tennessee","St John's"].map(NCAA_KEY));
 function ncaaNeedsLightLogo(name){return NCAA_LIGHT_LOGOS.has(NCAA_KEY(name));}
 function ncaaLogoFor(name){
- const raw=String(name||"").trim();
- const candidates=[raw,raw.replace(/\\bstate\\b/gi,"St."),raw.replace(/\\bst\\.?\\b/gi,"State"),raw.replace(/\\bst\\.?$/i,"ST"),raw.replace(/\\bstate$/i,"ST")];
- for(const candidate of candidates){const logo=NCAA_LOGOS[NCAA_KEY(candidate)];if(logo)return logo;}
+ const key=NCAA_KEY(name);
+ if(!key)return "";
+ const candidates=[key];
+ // The auction sheet and ESPN directory mix "State", "St", and "St.".
+ // Compare normalized suffixes directly so punctuation/spacing cannot break matching.
+ if(key.endsWith("state"))candidates.push(key.slice(0,-5)+"st");
+ if(key.endsWith("st"))candidates.push(key.slice(0,-2)+"state");
+ for(const candidate of candidates){const logo=NCAA_LOGOS[candidate];if(logo)return logo;}
  return "";
 }
 function loadNCAALogos(){
