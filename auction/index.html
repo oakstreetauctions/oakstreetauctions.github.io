@@ -488,7 +488,7 @@ function cell(o){const t=A.look[o];return t?`style="background:${t[1]};color:${t
 const NFL_LOGOS={"Arizona Cardinals":"ari","Atlanta Falcons":"atl","Baltimore Ravens":"bal","Buffalo Bills":"buf","Carolina Panthers":"car","Chicago Bears":"chi","Cincinnati Bengals":"cin","Cleveland Browns":"cle","Dallas Cowboys":"dal","Denver Broncos":"den","Detroit Lions":"det","Green Bay Packers":"gb","Houston Texans":"hou","Indianapolis Colts":"ind","Jacksonville Jaguars":"jax","Kansas City Chiefs":"kc","Las Vegas Raiders":"lv","Los Angeles Chargers":"lac","Los Angeles Rams":"lar","Miami Dolphins":"mia","Minnesota Vikings":"min","New England Patriots":"ne","New Orleans Saints":"no","New York Giants":"nyg","New York Jets":"nyj","Philadelphia Eagles":"phi","Pittsburgh Steelers":"pit","San Francisco 49ers":"sf","Seattle Seahawks":"sea","Tampa Bay Buccaneers":"tb","Tennessee Titans":"ten","Washington Commanders":"wsh"};
 const NCAA_LOGOS=Object.create(null);
 let NCAA_LOGOS_LOADING=false,NCAA_LOGOS_READY=false;
-const NCAA_KEY=s=>String(s||"").normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+const NCAA_KEY=s=>String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
 function ncaaLogoFor(name){return NCAA_LOGOS[NCAA_KEY(name)]||"";}
 function loadNCAALogos(){
   if(NCAA_LOGOS_LOADING||NCAA_LOGOS_READY)return;
