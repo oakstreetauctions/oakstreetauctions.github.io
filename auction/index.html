@@ -140,6 +140,12 @@ kbd{font:600 11px var(--ui);border:1px solid var(--line);border-bottom-width:2px
 .tv .secs .sc{min-width:0;display:flex;flex-direction:column}
 .tv .secs .r{height:auto!important;flex:0 0 31px;font-size:15px!important}
 .tv .sl .r{align-content:center!important;align-items:center!important}
+/* Safari: give board rows a real height so their text centers vertically */
+.tv .secs .r{height:31px!important}
+.tv .secs[data-rows="7"] .r{height:52px!important}
+.tv[data-ev="mm"] .secs .r{height:var(--rh,31px)!important}
+.tv[data-ev="mm"] .secs .r:has(.pair){height:calc(var(--rh,31px)*1.6)!important}
+.tv .sl .r{grid-template-rows:minmax(0,1fr)!important}
 .tv .secs[data-rows="7"] .r{flex-basis:52px;font-size:21px!important;grid-template-columns:28px minmax(0,1fr) 58px 46px!important}
 .tv .secs[data-rows="7"] .r i{font-size:15px}.tv .secs[data-rows="7"] .ow{height:24px;font-size:13px}
 .tv .secs[data-rows="7"] .sh{font-size:16px}
