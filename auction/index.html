@@ -490,7 +490,7 @@ const NFL_LOGOS={"Arizona Cardinals":"ari","Atlanta Falcons":"atl","Baltimore Ra
 const NCAA_LOGOS=Object.create(null);
 let NCAA_LOGOS_LOADING=false,NCAA_LOGOS_READY=false;
 const NCAA_KEY=s=>String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
-const NCAA_LIGHT_LOGOS=new Set(["Duke","UCLA","TCU","Clemson","Texas A&M","Iowa","Alabama","Virginia","Tennessee","St John's"].map(NCAA_KEY));
+const NCAA_LIGHT_LOGOS=new Set(["Duke","UCLA","TCU","Clemson","Texas A&M","Iowa","Alabama","Virginia","Tennessee","St John's","Utah State","Ohio State"].map(NCAA_KEY));
 function ncaaNeedsLightLogo(name){return NCAA_LIGHT_LOGOS.has(NCAA_KEY(name));}
 function ncaaLogoFor(name){
  const key=NCAA_KEY(name);
