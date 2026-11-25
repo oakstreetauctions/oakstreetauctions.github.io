@@ -488,10 +488,16 @@ function cell(o){const t=A.look[o];return t?`style="background:${t[1]};color:${t
 const NFL_LOGOS={"Arizona Cardinals":"ari","Atlanta Falcons":"atl","Baltimore Ravens":"bal","Buffalo Bills":"buf","Carolina Panthers":"car","Chicago Bears":"chi","Cincinnati Bengals":"cin","Cleveland Browns":"cle","Dallas Cowboys":"dal","Denver Broncos":"den","Detroit Lions":"det","Green Bay Packers":"gb","Houston Texans":"hou","Indianapolis Colts":"ind","Jacksonville Jaguars":"jax","Kansas City Chiefs":"kc","Las Vegas Raiders":"lv","Los Angeles Chargers":"lac","Los Angeles Rams":"lar","Miami Dolphins":"mia","Minnesota Vikings":"min","New England Patriots":"ne","New Orleans Saints":"no","New York Giants":"nyg","New York Jets":"nyj","Philadelphia Eagles":"phi","Pittsburgh Steelers":"pit","San Francisco 49ers":"sf","Seattle Seahawks":"sea","Tampa Bay Buccaneers":"tb","Tennessee Titans":"ten","Washington Commanders":"wsh"};
 const NCAA_LOGOS=Object.create(null);
 let NCAA_LOGOS_LOADING=false,NCAA_LOGOS_READY=false;
-const NCAA_ALIASES={"Michigan St":"Michigan State Spartans","St John's":"St. John's Red Storm","Miami":"Miami Hurricanes","Miami OH":"Miami RedHawks","NC State":"NC State Wolfpack","South Florida":"South Florida Bulls","Saint Mary's":"Saint Mary's Gaels","UCF":"UCF Knights","VCU":"VCU Rams","SMU":"SMU Mustangs","Penn":"Pennsylvania Quakers","N Dakota St":"North Dakota State Bison","CA Baptist":"California Baptist Lancers","Kennesaw St":"Kennesaw State Owls","Hawai'i":"Hawaii Rainbow Warriors","Wright St":"Wright State Raiders","Tennessee St":"Tennessee State Tigers","Prairie View":"Prairie View A&M Panthers","Long Island":"LIU Sharks","UMBC":"UMBC Retrievers"};
-const NCAA_KEY=s=>String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
-function ncaaLogoFor(name){const alias=NCAA_ALIASES[name]||name;return NCAA_LOGOS[NCAA_KEY(alias)]||NCAA_LOGOS[NCAA_KEY(name)]||"";}
-function loadNCAALogos(){if(NCAA_LOGOS_LOADING||NCAA_LOGOS_READY)return;NCAA_LOGOS_LOADING=true;fetch("https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=1000").then(r=>{if(!r.ok)throw new Error("NCAA team directory unavailable");return r.json()}).then(data=>{const entries=data?.sports?.[0]?.leagues?.[0]?.teams||[];entries.forEach(entry=>{const t=entry.team||entry;const logo=(t.logos||[]).find(x=>x&&x.href)?.href||t.logo||"";if(!logo)return;[t.displayName,t.shortDisplayName,t.location,t.name,t.abbreviation].forEach(k=>{if(k)NCAA_LOGOS[NCAA_KEY(k)]=logo;});});NCAA_LOGOS_READY=true;if(EK==="mm")render();}).catch(()=>{NCAA_LOGOS_READY=true});}
+const NCAA_KEY=s=>String(s||"").normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+function ncaaLogoFor(name){return NCAA_LOGOS[NCAA_KEY(name)]||"";}
+function loadNCAALogos(){
+  if(NCAA_LOGOS_LOADING||NCAA_LOGOS_READY)return;
+  NCAA_LOGOS_LOADING=true;
+  fetch("../assets/ncaa/teams.json").then(r=>{if(!r.ok)throw new Error("Local NCAA logo manifest unavailable");return r.json()})
+    .then(data=>{Object.assign(NCAA_LOGOS,data);NCAA_LOGOS_READY=true;if(EK==="mm")render();})
+    .catch(err=>{console.error("NCAA local logo library:",err);NCAA_LOGOS_READY=true;});
+}
+
 let TVSTYLE="fade";let SORT="price";
 let TVTEST=false;
 function drawTV(n,pot0){const tv=$("#tv");tv.dataset.ev=EK;document.documentElement.dataset.ev=EK;
