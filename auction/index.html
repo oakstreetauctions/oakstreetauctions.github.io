@@ -347,6 +347,18 @@ html:root[data-ev] .tvbox{background:var(--tv2)}
 *{font-variant-ligatures:none!important;font-feature-settings:"liga" 0,"clig" 0,"dlig" 0!important}
 
 .tv .res .rsrc{font:500 13px var(--ui);color:var(--tvmut);margin-top:3px;letter-spacing:.01em}
+
+/* results screen: title, label and pot share the top bar so the cards get the room */
+.tv .bar.rbar{gap:22px}
+.tv .bar.rbar .rlab{display:flex;align-items:baseline;gap:12px;min-width:0}
+.tv .bar.rbar .rlab b{font:400 26px var(--serif);color:#fff}
+.tv .bar.rbar .rlab span{font:600 13px var(--ui);color:var(--tvmut);letter-spacing:.02em;white-space:nowrap}
+.tv .bar.rbar .rpot{margin-left:auto;display:flex;align-items:baseline;gap:10px}
+.tv .bar.rbar .rpot span{font:700 11px var(--ui);letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.tv .bar.rbar .rpot b{font:800 30px var(--ui);color:var(--gold);font-variant-numeric:tabular-nums}
+.tv .res{padding:12px 20px 10px!important}
+.tv .res .bs2{grid-template-columns:repeat(5,auto)!important;justify-content:space-between;gap:.35em .6em!important}.tv .res .bs2 small{font-size:.6em!important;letter-spacing:.06em!important;white-space:nowrap}.tv .res .bs2>div{white-space:nowrap}
+.tv .res .gl{gap:.45em!important;grid-template-columns:minmax(0,1fr) auto auto auto!important}
 </style>
 
 <div class="top"><h1>Oak Street <span>Auction Night</span></h1><select id="evsel" class="evtop" aria-label="Auction"><option value="masters">Masters (56 lots)</option><option value="pga">PGA Championship (65 lots)</option><option value="usopen">U.S. Open (65 lots)</option><option value="open">The Open (66 lots)</option><option value="nfl">NFL Playoffs (14 teams)</option><option value="mm">March Madness (52 lots)</option></select><p><a href="/" style="color:inherit;text-decoration:none">Oak Street Auctions</a><br><span id="pracLbl">Practice: 2026 lots</span></p></div>
@@ -541,10 +553,16 @@ function drawTV(n,pot0){const tv=$("#tv");tv.dataset.ev=EK;document.documentElem
       return`<div class="bc2"><div class="bh2">${tag(b.o)}<span>${esc(b.o)}</span></div>
         <div class="bs2"><div><small>Paid</small>${fm(b.p)}</div><div><small>$ value</small><span class="${cl(b.d)}">${sg(b.d)}</span></div><div><small>% value</small><span class="${cl(b.d)}">${b.v?pc(b.d/b.v):"—"}</span></div><div><small>Odds</small>${(b.sh*100).toFixed(1)}%</div><div><small>Pot value</small><span class="${cl(b.d)}">${pc(b.d/R.pot,1)}</span></div></div>
         ${L.map(x=>`<div class="gl"><span>${esc(A.disp?A.disp[x.n]||x.n:x.n)}</span><i>${fm(x.p)}</i><b class="${cl(x.d)}">${sg(x.d)}</b><em class="${cl(x.d)}">${x.v?pc(x.d/x.v):"—"}</em></div>`).join("")}</div>`}).join("");
-    tv.innerHTML=`<div class="bar"><h3>${esc(A.title)} <span>Calcutta</span></h3></div>
-    <div class="res"><div class="rh"><div><div class="k">${R.done?"Final results":"Results so far"}</div><div class="rt2">Value</div>${["masters","pga","usopen","open"].includes(EK)?`<div class="rsrc">Odds per datagolf.com</div>`:""}</div><div class="rp"><span class="k">${R.done?"Final pot":"Projected pot"}</span><b>${fm(R.pot)}</b></div></div>
+    tv.innerHTML=`<div class="bar rbar"><h3>${esc(A.title)} <span>Calcutta</span></h3><div class="rlab"><b>Value</b><span>${R.done?"Final results":"Results so far"}${["masters","pga","usopen","open"].includes(EK)?" · Odds per datagolf.com":""}</span></div><div class="rpot"><span>${R.done?"Final pot":"Projected pot"}</span><b>${fm(R.pot)}</b></div></div>
+    <div class="res">
       <div class="cards2">${cards}</div></div>`;
-    const box=tv.querySelector(".cards2");let fs=13.5;box.style.fontSize=fs+"px";while(box.scrollWidth>box.clientWidth+2&&fs>8.5){fs-=.5;box.style.fontSize=fs+"px"}
+    const box=tv.querySelector(".cards2");const align=()=>{for(const c of box.querySelectorAll(".bc2")){const rs=[...c.querySelectorAll(".gl")];rs.forEach(r=>r.style.gridTemplateColumns="");const w=[1,2,3].map(k=>Math.ceil(Math.max(0,...rs.map(r=>r.children[k]?r.children[k].scrollWidth:0))));rs.forEach(r=>r.style.gridTemplateColumns=`minmax(0,1fr) ${w[0]}px ${w[1]}px ${w[2]}px`)}};
+    const fits=v=>{box.style.fontSize=v+"px";align();if(box.scrollWidth>box.clientWidth+2||box.scrollHeight>box.clientHeight+2)return false;
+      for(const e of box.querySelectorAll(".gl span,.gl b,.gl em,.bh2 span"))if(e.scrollWidth>e.clientWidth+1)return false;
+      for(const d of box.querySelectorAll(".bs2>div")){const sm=d.querySelector("small");const fsz=parseFloat(getComputedStyle(d).fontSize);if(d.scrollWidth>d.clientWidth+1||sm.offsetHeight>parseFloat(getComputedStyle(sm).fontSize)*1.7||d.offsetHeight>sm.offsetHeight+fsz*1.6)return false}
+      return true};
+    const best=n=>{box.style.columns=n+" auto";let lo=8.5,hi=30;if(!fits(lo))return 0;for(let k=0;k<14;k++){const mid=(lo+hi)/2;if(fits(mid))lo=mid;else hi=mid}return Math.floor(lo*4)/4};
+    let pick=[4,0];for(const n of [2,3,4,5]){const v=best(n);if(v>pick[1])pick=[n,v]}box.style.columns=pick[0]+" auto";box.style.fontSize=(pick[1]||8.5)+"px";align()
     return}const PP=projPot(),pot=PP!=null?PP:oddsOn()?0:pot0;
   const last=S.sales[S.sales.length-1],fl=S.flash&&last,dn=fl?last[0]:n,DL=dn&&lot(dn);
   let bid;
