@@ -603,7 +603,13 @@ function fitBoard(){const tv=$("#tv");if(!tv)return;const c=tv.querySelector(".s
 function fitMem(){const m=document.querySelector("#tv .stage .mem");if(!m)return;m.style.whiteSpace="nowrap";m.style.fontSize="";
   if(m.scrollWidth<=m.clientWidth)return;let p=100;while(p>62&&m.scrollWidth>m.clientWidth){p-=2;m.style.fontSize=p+"%"}
   if(m.scrollWidth>m.clientWidth){m.style.whiteSpace="";m.style.fontSize=""}}
-{const _dt=drawTV;drawTV=function(){const r=_dt.apply(this,arguments);try{fitBoard()}catch(e){}try{fitMem()}catch(e){}return r}}
+{const _dt=drawTV;drawTV=function(){const r=_dt.apply(this,arguments);try{fitBoard()}catch(e){}try{fitMem()}catch(e){}try{fixHang()}catch(e){}return r}}
+/* letters that hang past the left edge in serif fonts (Caslon's J): indent by the overhang so names line up */
+const HANGC=document.createElement("canvas").getContext("2d");
+function fixHang(){document.querySelectorAll("#cLot, #tv .stage .lot").forEach(el=>{el.style.textIndent="";const t=(el.textContent||"").trim();if(!t)return;
+  const cs=getComputedStyle(el);HANGC.font=cs.fontStyle+" "+cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily;const ov=HANGC.measureText(t[0]).actualBoundingBoxLeft;
+  if(ov>0.5)el.style.textIndent=ov.toFixed(1)+"px"})}
+{const _rh=render;render=function(){const r=_rh.apply(this,arguments);try{fixHang()}catch(e){}return r}}
 
 function sell(name,owner,price){S.sales.push([name,owner,price]);S.queue=S.queue.filter(q=>q!==name);S.price="";S.buyer="";S.flash=1;JUST=name;clearTimeout(sell.t);sell.t=setTimeout(()=>{S.flash=0;render()},timer?240:2200);render()}
 const TAGOF=b=>(A.look[b]||[b])[0].toLowerCase(),NRM=s=>s.toLowerCase().replace(/[^a-z0-9 ]/g,"").replace(/\s+/g," ").trim();
