@@ -1,12 +1,6 @@
 {
   "expected_teams": 364,
   "downloaded_or_cached": 364,
-  "missing": [
-    {
-      "school": "Fairleigh Dickinson",
-      "espn_id": 2218,
-      "reason": null
-    }
-  ],
+  "missing": [],
   "logo_files": 363
 }
