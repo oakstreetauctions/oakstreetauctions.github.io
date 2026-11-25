@@ -241,6 +241,7 @@ kbd{font:600 11px var(--ui);border:1px solid var(--line);border-bottom-width:2px
 .fp #fair .r em{font-style:normal;color:var(--mut);font-weight:600;text-align:right;font-variant-numeric:tabular-nums}.fp .rkh{display:inline-block;width:28px;margin-right:10px;text-align:right}
 .fp #fair .r{display:grid;grid-template-columns:28px minmax(0,1fr) 52px 64px;gap:10px;padding:6px 14px;border-top:1px solid var(--line);font-size:13.5px;font-variant-numeric:tabular-nums}
 .fp #fair .r span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fp #fair .r i{font-style:normal;color:var(--mut);text-align:right}.fp #fair .r b{text-align:right;color:var(--green)}
+.fp .rgh{display:none;width:30px;margin-right:10px}.fp.rg .rgh{display:inline-block}.fp.rg #fair .r{grid-template-columns:28px 30px minmax(0,1fr) 52px 64px}.fp #fair .r u{text-decoration:none;color:var(--mut);font-weight:600}
 .fp #fair .r.up{background:rgba(242,201,76,.28);box-shadow:inset 3px 0 0 var(--gold);font-weight:700}.fp #fair .none{padding:8px 14px 14px;color:var(--mut);font-size:13px}
 .tv .lot.two{display:flex;flex-direction:column;font-size:36px!important;line-height:1.08!important;white-space:normal}.tv .lot.two span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tv .sl .r .pair{display:flex;flex-direction:column;line-height:1.08;font-size:.84em;min-width:0}.tv .sl .r .pair span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -345,7 +346,7 @@ html:root[data-ev] .tvbox{background:var(--tv2)}
   <div class="tvbox" id="tvbox"><div class="tv" id="tv"></div></div>
   <div class="card st"><div><small>Pot</small><b id="cPot">$0</b></div><div><small>Projected pot</small><b id="cProj">—</b></div><div><small>Sold</small><b id="cSold">0</b></div></div>
   <div class="card rec"><div class="sec" style="padding:12px 14px 4px">Recent sales</div><div id="recent"></div></div>
-  <div class="card fp"><div class="fph"><span class="sec"><span class="rkh">Rk</span>Fair prices · still to sell</span><span class="sec" id="fpn"></span></div><div id="fair"></div></div>
+  <div class="card fp"><div class="fph"><span class="sec"><span class="rkh">Rk</span><span class="rgh">RGN</span>Fair prices · still to sell</span><span class="sec" id="fpn"></span></div><div id="fair"></div></div>
 </section>
 </div>
 <script>
@@ -448,12 +449,12 @@ function render(){const n=cur(),L=n&&lot(n),pot=S.sales.reduce((a,s)=>a+s[2],0);
   $("#priv").innerHTML=n?privHTML(n):"";$("#priv").hidden=!n;
   if($("#hide"))$("#hide").onclick=()=>{SHOWV=!SHOWV;render()};const pp=projPot();$("#cProj").textContent=pp==null?"—":fm(pp);
   hint();salesUI();bidUI();
-  {const fp=$("#fair");if(fp){const pp=projPot(),left=S.queue.filter(q=>lot(q));$("#fpn").textContent=left.length+" left";
+  {const fp=$("#fair");if(fp){const pp=projPot(),left=S.queue.filter(q=>lot(q));$("#fpn").textContent=left.length+" left";const RG=EK==="mm"&&A.sections?Object.fromEntries(A.sections.flatMap(x=>x[1].map(t=>[t,({East:"E",South:"S",West:"W",Midwest:"MW"})[x[0]]||x[0]]))):null;fp.closest(".fp").classList.toggle("rg",!!RG);
     if(!oddsOn())fp.innerHTML=`<div class="none">Load odds in the Odds tab to see fair prices.</div>`;
     else if(!SHOWV)fp.innerHTML=`<div class="none">Hidden.</div>`;
     else{const RKS={};{const all=A.lots.map(l=>[l[0],share(l[0])]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);all.forEach((x,i)=>{RKS[x[0]]=i&&x[1]===all[i-1][1]?RKS[all[i-1][0]]:i+1})}
     const ord=q=>{const l=lot(q),i=A.lots.indexOf(l);if(A.sections)return[0,i,""];if(/^Field$/i.test(q))return[3,0,""];if(/^Group/i.test(q))return[2,0,q];return[1,l[2]||999,q]};
-    fp.innerHTML=left.map(q=>[q,share(q)]).sort((a,b)=>{const x=ord(a[0]),y=ord(b[0]);return x[0]-y[0]||x[1]-y[1]||x[2].localeCompare(y[2])}).map(([q,sh])=>`<div class="r${q===n?" up":""}"><em>${RKS[q]||"—"}</em><span>${esc(A.disp?A.disp[q]||q:q)}</span><i>${(sh*100).toFixed(1)}%</i><b>${pp==null?"—":fm(sh*pp)}</b></div>`).join("")}}}
+    fp.innerHTML=left.map(q=>[q,share(q)]).sort((a,b)=>{const x=ord(a[0]),y=ord(b[0]);return x[0]-y[0]||x[1]-y[1]||x[2].localeCompare(y[2])}).map(([q,sh])=>`<div class="r${q===n?" up":""}"><em>${RKS[q]||"—"}</em>${RG?`<u>${RG[q]||""}</u>`:""}<span>${esc(A.disp?A.disp[q]||q:q)}</span><i>${(sh*100).toFixed(1)}%</i><b>${pp==null?"—":fm(sh*pp)}</b></div>`).join("")}}}
   {const rc=$("#recent");if(rc)rc.innerHTML=S.sales.length?S.sales.slice(-3).reverse().map(s=>`<div class="r" data-edit="${esc(s[0])}" title="Click to fix this sale">${tag(s[1])}<span>${esc(A.disp?A.disp[s[0]]||s[0]:s[0])}</span><b>${fm(s[2])}</b></div>`).join(""):`<div class="none">Sales show up here as you go.</div>`}
   $("#bz").innerHTML=BID.map(b=>`<button class="${S.buyer===b?"on":""}" data-b="${esc(b)}">${tag(b)}<span>${esc(b)}</span></button>`).join("");
   $("#sold").disabled=!n||!(+S.price>0)||!S.buyer;$("#undo").disabled=!S.sales.length;$("#skip").disabled=S.queue.length<2;
