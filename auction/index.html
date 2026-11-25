@@ -540,7 +540,7 @@ function drawTV(n,pot0){const tv=$("#tv");tv.dataset.ev=EK;document.documentElem
         <div class="bs2"><div><small>Paid</small>${fm(b.p)}</div><div><small>$ value</small><span class="${cl(b.d)}">${sg(b.d)}</span></div><div><small>% value</small><span class="${cl(b.d)}">${b.v?pc(b.d/b.v):"—"}</span></div><div><small>Odds</small>${(b.sh*100).toFixed(1)}%</div><div><small>Pot value</small><span class="${cl(b.d)}">${pc(b.d/R.pot,1)}</span></div></div>
         ${L.map(x=>`<div class="gl"><span>${esc(A.disp?A.disp[x.n]||x.n:x.n)}</span><i>${fm(x.p)}</i><b class="${cl(x.d)}">${sg(x.d)}</b><em class="${cl(x.d)}">${x.v?pc(x.d/x.v):"—"}</em></div>`).join("")}</div>`}).join("");
     tv.innerHTML=`<div class="bar"><h3>${esc(A.title)} <span>Calcutta</span></h3></div>
-    <div class="res"><div class="rh"><div><div class="k">${R.done?"Final results":"Results so far"}</div><div class="rt2">Who got a steal</div></div><div class="rp"><span class="k">${R.done?"Final pot":"Projected pot"}</span><b>${fm(R.pot)}</b></div></div>
+    <div class="res"><div class="rh"><div><div class="k">${R.done?"Final results":"Results so far"}</div><div class="rt2">Odds per datagolf.com</div></div><div class="rp"><span class="k">${R.done?"Final pot":"Projected pot"}</span><b>${fm(R.pot)}</b></div></div>
       <div class="cards2">${cards}</div></div>`;
     const box=tv.querySelector(".cards2");let fs=13.5;box.style.fontSize=fs+"px";while(box.scrollWidth>box.clientWidth+2&&fs>8.5){fs-=.5;box.style.fontSize=fs+"px"}
     return}const PP=projPot(),pot=PP!=null?PP:oddsOn()?0:pot0;
