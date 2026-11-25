@@ -495,13 +495,7 @@ function loadNCAALogos(){
   NCAA_LOGOS_LOADING=true;
   fetch("../assets/ncaa/teams.json").then(r=>{if(!r.ok)throw new Error("Local NCAA logo manifest unavailable");return r.json()})
     .then(data=>{Object.assign(NCAA_LOGOS,data);NCAA_LOGOS_READY=true;if(EK==="mm")render();})
-    .catch(err=>{
-      console.error("NCAA local logo library unavailable; using temporary directory fallback:",err);
-      fetch("https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=1000")
-        .then(r=>{if(!r.ok)throw new Error("NCAA team directory unavailable");return r.json()})
-        .then(data=>{(data?.sports?.[0]?.leagues?.[0]?.teams||[]).forEach(entry=>{const t=entry.team||entry;const logo=(t.logos||[]).find(x=>x&&x.href)?.href||t.logo||"";if(logo)[t.displayName,t.shortDisplayName,t.location,t.name,t.abbreviation].forEach(k=>{if(k)NCAA_LOGOS[NCAA_KEY(k)]=logo;});});NCAA_LOGOS_READY=true;if(EK==="mm")render();})
-        .catch(()=>{NCAA_LOGOS_READY=true;});
-    });
+    .catch(err=>{console.error("NCAA local logo library unavailable:",err);NCAA_LOGOS_READY=true;});
 }
 
 let TVSTYLE="fade";let SORT="price";
