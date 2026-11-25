@@ -492,17 +492,21 @@ const NCAA_LOGOS=Object.create(null);
 let NCAA_LOGOS_LOADING=false,NCAA_LOGOS_READY=false;
 const NCAA_KEY=s=>String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const NCAA_LIGHT_LOGOS=new Set(["Duke","UCLA","TCU","Clemson","Texas A&M","Iowa","Alabama","Virginia","Tennessee","St John's","Utah State","Ohio State"].map(NCAA_KEY));
-function ncaaNeedsOutline(name){return NCAA_KEY(name).replace(/st$/,"state")==="michiganstate";}
-function ncaaNeedsLightLogo(name){return NCAA_LIGHT_LOGOS.has(NCAA_KEY(name));}
+function ncaaNameKeys(name){
+ const words=String(name||"").normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().match(/[a-z0-9]+/g)||[];
+ if(!words.length)return [];
+ // Treat State, St., St, and Saint as interchangeable whole-word school-name forms.
+ const forms=[words];
+ for(let i=0;i<words.length;i++){
+  const alternatives=words[i]==="state"?["st"]:words[i]==="st"?["state","saint"]:words[i]==="saint"?["st"]:[];
+  for(const alternative of alternatives){const copy=words.slice();copy[i]=alternative;forms.push(copy);}
+ }
+ return [...new Set(forms.map(parts=>parts.join("")))];
+}
+function ncaaNeedsOutline(name){return ncaaNameKeys(name).includes("michiganstate");}
+function ncaaNeedsLightLogo(name){return ncaaNameKeys(name).some(key=>NCAA_LIGHT_LOGOS.has(key));}
 function ncaaLogoFor(name){
- const key=NCAA_KEY(name);
- if(!key)return "";
- const candidates=[key];
- // The auction sheet and ESPN directory mix "State", "St", and "St.".
- // Compare normalized suffixes directly so punctuation/spacing cannot break matching.
- if(key.endsWith("state"))candidates.push(key.slice(0,-5)+"st");
- if(key.endsWith("st"))candidates.push(key.slice(0,-2)+"state");
- for(const candidate of candidates){const logo=NCAA_LOGOS[candidate];if(logo)return logo;}
+ for(const candidate of ncaaNameKeys(name)){const logo=NCAA_LOGOS[candidate];if(logo)return logo;}
  return "";
 }
 function loadNCAALogos(){
