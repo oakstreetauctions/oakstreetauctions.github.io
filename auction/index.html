@@ -596,7 +596,11 @@ function fitBoard(){const tv=$("#tv");if(!tv)return;const c=tv.querySelector(".s
   const fit=()=>{let bad=0;sp.forEach(s=>{s.style.fontSize="";if(s.scrollWidth>s.clientWidth){const f=s.clientWidth/(s.scrollWidth+1);if(f>=.9)s.style.fontSize=(Math.floor(f*1000)/10)+"%";else bad++}});return bad};
   if(SX){tv.style.removeProperty("--fs");let fs=Math.min(cur()*.62,26);const sf=v=>tv.style.setProperty("--fs",v+"px");sf(fs);for(let k=0;k<60&&fs>11&&fit();k++){fs-=.5;sf(fs)}return}
   for(let k=0;k<60&&cur()>12&&fit();k++)set(cur()-0.5)}
-{const _dt=drawTV;drawTV=function(){const r=_dt.apply(this,arguments);try{fitBoard()}catch(e){}return r}}
+/* keep the line under the lot name (group golfers, team info) on one line: shrink it slightly instead of wrapping */
+function fitMem(){const m=document.querySelector("#tv .stage .mem");if(!m)return;m.style.whiteSpace="nowrap";m.style.fontSize="";
+  if(m.scrollWidth<=m.clientWidth)return;let p=100;while(p>62&&m.scrollWidth>m.clientWidth){p-=2;m.style.fontSize=p+"%"}
+  if(m.scrollWidth>m.clientWidth){m.style.whiteSpace="";m.style.fontSize=""}}
+{const _dt=drawTV;drawTV=function(){const r=_dt.apply(this,arguments);try{fitBoard()}catch(e){}try{fitMem()}catch(e){}return r}}
 
 function sell(name,owner,price){S.sales.push([name,owner,price]);S.queue=S.queue.filter(q=>q!==name);S.price="";S.buyer="";S.flash=1;JUST=name;clearTimeout(sell.t);sell.t=setTimeout(()=>{S.flash=0;render()},timer?240:2200);render()}
 const TAGOF=b=>(A.look[b]||[b])[0].toLowerCase(),NRM=s=>s.toLowerCase().replace(/[^a-z0-9 ]/g,"").replace(/\s+/g," ").trim();
