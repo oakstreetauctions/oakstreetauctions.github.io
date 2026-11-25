@@ -1,27 +1,22 @@
 {
   "expected_teams": 365,
-  "downloaded_or_cached": 361,
+  "downloaded_or_cached": 362,
   "missing": [
+    {
+      "school": "West Georgia",
+      "espn_id": 2696,
+      "reason": "HTTP Error 404: Not Found"
+    },
     {
       "school": "Fairleigh Dickinson",
       "espn_id": 2218,
       "reason": "HTTP Error 404: Not Found"
     },
     {
-      "school": "Mercyhurst",
-      "espn_id": 2783,
-      "reason": "HTTP Error 404: Not Found"
-    },
-    {
       "school": "Tarleton St.",
       "espn_id": 2867,
       "reason": "HTTP Error 404: Not Found"
-    },
-    {
-      "school": "West Georgia",
-      "espn_id": 2696,
-      "reason": "HTTP Error 404: Not Found"
     }
   ],
-  "logo_files": 361
+  "logo_files": 362
 }
