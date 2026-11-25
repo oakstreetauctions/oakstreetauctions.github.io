@@ -491,8 +491,13 @@ const NCAA_LOGOS=Object.create(null);
 let NCAA_LOGOS_LOADING=false,NCAA_LOGOS_READY=false;
 const NCAA_KEY=s=>String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const NCAA_LIGHT_LOGOS=new Set(["Duke","UCLA","TCU","Clemson","Texas A&M","Iowa","Alabama","Virginia","Tennessee","St John's"].map(NCAA_KEY));
-function ncaaNeedsLightLogo(name){const k=NCAA_KEY(name);return NCAA_LIGHT_LOGOS.has(k)||k.endsWith('state')||k.endsWith('st');}
-function ncaaLogoFor(name){return NCAA_LOGOS[NCAA_KEY(name)]||"";}
+function ncaaNeedsLightLogo(name){return NCAA_LIGHT_LOGOS.has(NCAA_KEY(name));}
+function ncaaLogoFor(name){
+ const raw=String(name||"").trim();
+ const candidates=[raw,raw.replace(/\\bstate\\b/gi,"St."),raw.replace(/\\bst\\.?\\b/gi,"State"),raw.replace(/\\bst\\.?$/i,"ST"),raw.replace(/\\bstate$/i,"ST")];
+ for(const candidate of candidates){const logo=NCAA_LOGOS[NCAA_KEY(candidate)];if(logo)return logo;}
+ return "";
+}
 function loadNCAALogos(){
   if(NCAA_LOGOS_LOADING||NCAA_LOGOS_READY)return;
   NCAA_LOGOS_LOADING=true;
