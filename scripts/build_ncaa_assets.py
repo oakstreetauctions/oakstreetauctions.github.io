@@ -10,7 +10,7 @@ ASSET_DIR = ROOT / "assets" / "ncaa"
 LOGO_DIR = ASSET_DIR / "logos"
 IDS_FILE = ASSET_DIR / "espn_ids.json"
 LOGO_DIR.mkdir(parents=True, exist_ok=True)
-FALLBACK_SLUGS = {"Fairleigh Dickinson": "fairleigh-dickinson", "Mercyhurst": "mercyhurst", "Tarleton St.": "tarleton-state", "West Georgia": "west-georgia"}
+FALLBACK_SLUGS = {"Fairleigh Dickinson": "fairleigh-dickinson"}
 
 def key(value):
     return re.sub(r"[^a-z0-9]", "", value.lower())
@@ -93,7 +93,7 @@ for alias, canonical in aliases.items():
 report = {
     "expected_teams": len(teams),
     "downloaded_or_cached": sum(r[2] in ("downloaded", "cached", "downloaded-svg") for r in results),
-    "missing": [{"school": n, "espn_id": i, "reason": e} for n, i, status, e in results if status not in ("downloaded", "cached")],
+    "missing": [{"school": n, "espn_id": i, "reason": e} for n, i, status, e in results if status not in ("downloaded", "cached", "downloaded-svg")],
     "logo_files": len(list(LOGO_DIR.glob("*.png"))),
 }
 (ASSET_DIR / "build-report.json").write_text(json.dumps(report, indent=2) + "\n")
