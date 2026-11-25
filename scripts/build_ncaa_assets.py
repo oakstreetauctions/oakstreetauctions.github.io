@@ -83,6 +83,18 @@ manifest = {}
 for name, team_id in teams.items():
     suffix = "svg" if (LOGO_DIR / (str(team_id) + ".svg")).exists() else "png"
     manifest[key(name)] = "../assets/ncaa/logos/" + str(team_id) + "." + suffix
+# Accept common NCAA/auction spelling variants: St., ST, and State.
+for official_name in teams:
+    variants = {
+        re.sub(r"\\bSt\\.$", "State", official_name, flags=re.I),
+        re.sub(r"\\bState$", "St.", official_name, flags=re.I),
+        re.sub(r"\\bSt\\.$", "ST", official_name, flags=re.I),
+        re.sub(r"\\bState$", "ST", official_name, flags=re.I),
+    }
+    for variant in variants:
+        if variant and variant != official_name:
+            aliases[variant] = official_name
+
 for alias, canonical in aliases.items():
     if canonical in teams:
         team_id = teams[canonical]
